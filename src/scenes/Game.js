@@ -10,6 +10,7 @@ export class Game extends Scene {
     this.bgTile;
     this.obstacle;
     this.rock;
+    this.rockGroup = [];
   }
 
   create() {
@@ -41,28 +42,23 @@ export class Game extends Scene {
     this.player.setBounce(0.2);
     this.player.scale = 0.25;
 
-    // add rock to bump into
     this.obstacle = this.physics.add.staticGroup();
-    this.rock = this.obstacle.create(512, 0, "rock").refreshBody();
-    this.rock.scale = 0.25;
-    this.physics.add.overlap(
-      this.player,
-      this.rock,
-      this.hitObstacle,
-      null,
-      this
-    );
+    // add rock obstacle every 2-8 seconds
+    setInterval(() => {
+      this.createObstacle();
+    }, Phaser.Math.Between(2000, 8000));
 
     this.cursors = this.input.keyboard.createCursorKeys();
-
   }
 
   update() {
     // move the tile background
     this.bgTile.tilePositionY -= 1;
     // move the rock, refresh to update physics body
-    this.rock.setPosition(512, this.rock.y + 1);
-    this.rock.refreshBody();
+    this.rockGroup.forEach((rock) => {
+      rock.setPosition(rock.x, rock.y + 1);
+      rock.refreshBody();
+    });
 
     // move the bubble on keys
     // if (this.cursors.left.isDown) {
@@ -78,8 +74,19 @@ export class Game extends Scene {
   hitObstacle() {
     this.scene.start("GameOver");
   }
-  // TODO: helper function to create obstacles at random intervals/positions
-  createObstacle(){
-    this.obstacle.create(512, 0, "rock").refreshBody();
+  // helper function to create obstacles at random intervals/positions
+  createObstacle() {
+    const newRock = this.obstacle
+      .create(Math.random() * 1000, 0, "rock")
+      .refreshBody();
+    newRock.scale = 0.25;
+    this.physics.add.overlap(
+      this.player,
+      newRock,
+      this.hitObstacle,
+      null,
+      this
+    );
+    this.rockGroup.push(newRock);
   }
 }
