@@ -49,6 +49,9 @@ export class Game extends Scene {
     }, Phaser.Math.Between(2000, 8000));
 
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.input.once("pointerdown", () => {
+      this.scene.start("GameOver");
+    });
   }
 
   update() {
@@ -73,6 +76,7 @@ export class Game extends Scene {
   }
   hitObstacle() {
     this.scene.start("GameOver");
+    this.scene.stop("Game");
   }
   // helper function to create obstacles at random intervals/positions
   createObstacle() {
