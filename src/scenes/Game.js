@@ -93,4 +93,19 @@ export class Game extends Scene {
     );
     this.rockGroup.push(newRock);
   }
+  // helper function to create obstacles at random intervals/positions
+  createObstacle() {
+    const newRock = this.obstacle
+      .create(Math.random() * 1000, 0, "rock")
+      .refreshBody();
+    newRock.scale = 0.25;
+    this.physics.add.overlap(
+      this.player,
+      newRock,
+      this.hitObstacle,
+      null,
+      this
+    );
+    this.rockGroup.push(newRock);
+  }
 }
