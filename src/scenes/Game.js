@@ -45,7 +45,21 @@ export class Game extends Scene {
     this.player = this.physics.add.sprite(512, 768, "bubble");
     this.player.setCollideWorldBounds(true);
     this.player.setBounce(0.2);
-    this.player.scale = 0.25;
+    this.player.scale = 3;
+
+    // animate player bubble
+    this.animate = this.anims.create({
+      key: "idle",
+      frames: [
+        { key: "bubble" },
+        { key: "frame2" },
+        // { key: "frame3" },
+        { key: "frame4" },
+      ],
+      frameRate: 8,
+      repeat: -1,
+    });
+    this.player.play("idle");
 
     this.obstacle = this.physics.add.staticGroup();
     // add rock obstacle at start & every 2-8 seconds
