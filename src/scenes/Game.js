@@ -7,6 +7,8 @@ export class Game extends Scene {
     this.player;
     this.cursors;
     this.bgTile;
+    this.cloudTile;
+    this.moreClouds;
     this.obstacle;
     this.rock;
     this.rockGroup = [];
@@ -15,7 +17,11 @@ export class Game extends Scene {
   create() {
     // add tiled background for scrolling
     this.bgTile = this.add.tileSprite(0, 0, 1024, 768, "background");
-    this.bgTile.scale = 4;
+    this.bgTile.scale = 3;
+    this.cloudTile = this.add.tileSprite(512, 384, 1024, 768, "cloud");
+    this.cloudTile.scale = 1.5;
+    this.moreClouds = this.add.tileSprite(-512, 384, 1024, 384, "cloud");
+    this.moreClouds.scale = 2;
 
     this.add
       .text(
@@ -32,13 +38,12 @@ export class Game extends Scene {
         }
       )
       .setOrigin(0.5);
-    this.add.image(512, 768, "cloud-sky");
 
     // add bubble, that won't fall off screen
     this.player = this.physics.add.sprite(512, 768, "bubble");
     this.player.setCollideWorldBounds(true);
     this.player.setBounce(0.2);
-    this.player.scale = 0.25;
+    this.player.scale = 0.15;
 
     this.obstacle = this.physics.add.staticGroup();
     // add rock obstacle every 2-8 seconds
@@ -52,6 +57,8 @@ export class Game extends Scene {
   update() {
     // move the tile background
     this.bgTile.tilePositionY -= 1;
+    this.cloudTile.tilePositionY -= 0.8;
+    this.moreClouds.tilePositionY -= 0.5;
     // move the rock, refresh to update physics body
     this.rockGroup.forEach((rock) => {
       rock.setPosition(rock.x, rock.y + 1);

@@ -16,7 +16,7 @@ export class Boot extends Scene {
 
     this.load.image("background", "assets/bg.png");
     this.load.image("bubble", "assets/bubble.png");
-    this.load.image("cloud-sky", "assets/cloud-sky.png");
+    this.load.image("cloud", "assets/cloud.webp");
     this.load.image("rock", "assets/crop-rock.png");
   }
 
