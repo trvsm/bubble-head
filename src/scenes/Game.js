@@ -16,6 +16,10 @@ export class Game extends Scene {
     this.rock;
     this.rockGroup = [];
     this.fp = FacePad;
+    // sound effects: background music & bubble pop
+    this.music = this.sound.add("music", { loop: true }); // can add more in this config args; speed, mute, volume
+    this.music.play();
+    this.pop = this.sound.add("pop");
     // add tiled background for scrolling
     this.bgTile = this.add.tileSprite(0, 0, 1024, 768, "background");
     this.bgTile.scale = 4;
@@ -50,6 +54,7 @@ export class Game extends Scene {
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this.input.once("pointerdown", () => {
+      this.music.stop();
       this.scene.start("GameOver");
     });
   }
@@ -68,8 +73,13 @@ export class Game extends Scene {
     this.player.setVelocityX(val * 10);
   }
   hitObstacle() {
-    this.scene.start("GameOver");
-    this.scene.stop("Game");
+    this.add.image(512, 384, "explode");
+    this.pop.play();
+    this.music.stop();
+    setTimeout(() => {
+      this.scene.start("GameOver");
+      this.scene.stop("Game");
+    }, 1200);
     this.clearInterval();
   }
   // helper function to create obstacles at random intervals/positions

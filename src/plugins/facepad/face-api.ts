@@ -1,7 +1,7 @@
 import * as faceapi from "face-api.js";
 import { getFaceRollAngle } from "./get-roll-angle";
 
-const BASE_PATH = "/bubble-head";
+const BASE_PATH = "";
 
 const MODEL_URL = `${BASE_PATH}/models`;
 

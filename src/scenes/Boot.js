@@ -18,6 +18,10 @@ export class Boot extends Scene {
     this.load.image("bubble", "assets/bubble.png");
     this.load.image("cloud-sky", "assets/cloud-sky.png");
     this.load.image("rock", "assets/crop-rock.png");
+    this.load.image("explode", "assets/explode.png");
+    // sound effects
+    this.load.audio("pop", "assets/pop.mp3");
+    this.load.audio("music", "assets/cloud-dancer.mp3");
   }
 
   create() {
