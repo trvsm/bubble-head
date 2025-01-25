@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { FacePad } from "../plugins/facepad";
 // import { EventBus } from "./EventBus";
 
 export class Game extends Scene {
@@ -11,6 +12,7 @@ export class Game extends Scene {
   }
 
   create() {
+    this.fp = FacePad;
     // add tiled background for scrolling
     this.bgTile = this.add.tileSprite(0, 0, 1024, 768, "background");
     this.bgTile.scale = 4;
@@ -63,11 +65,15 @@ export class Game extends Scene {
     // TODO: set the position of obstacle to move down
 
     // move the bubble on keys
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-120);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(120);
-    }
+    // if (this.cursors.left.isDown) {
+    //   this.player.setVelocityX(-120);
+    // } else if (this.cursors.right.isDown) {
+    //   this.player.setVelocityX(120);
+    // }
+
+    // Use FacePad Value
+    const val = this.fp.value;
+    this.player.setVelocityX(val * 10);
   }
   hitObstacle(player, obstacle) {
     this.scene.start("GameOver");
