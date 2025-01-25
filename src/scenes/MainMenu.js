@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { responsivePositioning } from "../plugins/responsive";
 
 export class MainMenu extends Scene {
   constructor() {
@@ -6,23 +7,35 @@ export class MainMenu extends Scene {
   }
 
   create() {
-    this.add.image(512, 384, "background");
+    this.positioning = responsivePositioning(this.game);
 
-    this.add.image(512, 300, "logo");
+    this.positioning.addBackgroundToScene(this);
 
     this.add
-      .text(512, 460, "Main Menu", {
-        fontFamily: "Arial Black",
-        fontSize: 38,
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 8,
-        align: "center",
-      })
-      .setOrigin(0.5);
+      .text(
+        this.positioning.getCenteredPositionX(),
+        this.getLogoY(),
+        "Bubble Head",
+        this.positioning.getFontLarge()
+      )
+      .setOrigin(0.5, 1);
+
+    this.add
+      .text(
+        this.positioning.getCenteredPositionX(),
+        this.getLogoY() + 10 * this.positioning.getScaleY(),
+        "Tap the screen to Start",
+        this.positioning.getFontRegular()
+      )
+      .setOrigin(0.5, 0);
 
     this.input.once("pointerdown", () => {
       this.scene.start("Game");
     });
+  }
+
+  getLogoY() {
+    let y = this.game.scale.height / 2;
+    return y;
   }
 }
