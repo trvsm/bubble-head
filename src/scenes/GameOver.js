@@ -18,14 +18,7 @@ export class GameOver extends Scene {
         this.positioning.getCenteredPositionX(),
         this.positioning.getCenteredPositionY(),
         "Game Over",
-        {
-          fontFamily: "Arial Black",
-          fontSize: 64,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeThickness: 8,
-          align: "center",
-        }
+        this.positioning.getFontLarge()
       )
       .setOrigin(0.5);
 

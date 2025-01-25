@@ -25,8 +25,6 @@ export function responsivePositioning(game: Phaser.Game) {
         .setDisplayOrigin(0, 0);
     },
 
-    getFontSizeRegular() {},
-
     getFontRegular() {
       const fontSize = 16 * this.getScaleY();
       return {
@@ -34,8 +32,40 @@ export function responsivePositioning(game: Phaser.Game) {
         fontSize,
         color: "#ffffff",
         stroke: "#000000",
-        strokeThickness: 8 * this.getScaleX(),
+        strokeThickness: 6,
         align: "center",
+        wordWrap: { width: game.scale.width - 100 * this.getScaleX() },
+      };
+    },
+
+    getFontLarge() {
+      const fontSize = 48 * this.getScaleY();
+      return {
+        fontFamily: "Arial Black",
+        fontStyle: "bold",
+        fontSize,
+        color: "#ffffff",
+        stroke: "#000000",
+        strokeThickness: 8,
+        align: "center",
+        wordWrap: { width: game.scale.width - 100 * this.getScaleX() },
+      };
+    },
+
+    /**
+     * Get the scaled width and height for objects
+     * @param width The original asset width
+     * @param height The original asset height
+     * @param scale The scale factor against the screen width
+     * @returns
+     */
+    getScaledSprite(width: number, height: number, scale: number = 0.25) {
+      const aspectRatio = width / height;
+      const newWidth = width * this.getScaleX() * scale;
+
+      return {
+        width: newWidth,
+        height: newWidth / aspectRatio,
       };
     },
   };

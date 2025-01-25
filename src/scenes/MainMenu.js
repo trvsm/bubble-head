@@ -16,30 +16,18 @@ export class MainMenu extends Scene {
         this.positioning.getCenteredPositionX(),
         this.getLogoY(),
         "Bubble Head",
-        {
-          font: `bold ${this.getLogoFontSize()}px sans-serif`,
-          color: "#fff",
-          stroke: "#fff",
-          strokeThickness: 3,
-        }
+        this.positioning.getFontLarge()
       )
-      .setOrigin(0.5, 0.5);
+      .setOrigin(0.5, 1);
 
     this.add
       .text(
         this.positioning.getCenteredPositionX(),
-        this.getLogoY() + 100,
-        "Click the Screen to Start",
-        {
-          fontFamily: "Arial Black",
-          fontSize: 38,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeThickness: 8,
-          align: "center",
-        }
+        this.getLogoY() + 10 * this.positioning.getScaleY(),
+        "Tap the screen to Start",
+        this.positioning.getFontRegular()
       )
-      .setOrigin(0.5, 0.5);
+      .setOrigin(0.5, 0);
 
     this.input.once("pointerdown", () => {
       this.scene.start("Game");
@@ -47,12 +35,7 @@ export class MainMenu extends Scene {
   }
 
   getLogoY() {
-    let y = Phaser.Math.Clamp(this.game.scale.height / 4, 80, 150);
+    let y = this.game.scale.height / 2;
     return y;
-  }
-  getLogoFontSize() {
-    let fontSize = 72 * this.positioning.getScaleY();
-    fontSize = Phaser.Math.Clamp(fontSize, 48, 72);
-    return fontSize;
   }
 }
