@@ -1,6 +1,6 @@
 import { Scene } from "phaser";
 import { FacePad } from "../plugins/facepad";
-// import { EventBus } from "./EventBus";
+import { responsivePositioning } from "../plugins/responsive";
 
 export class Game extends Scene {
   constructor() {
@@ -20,25 +20,47 @@ export class Game extends Scene {
     this.music = this.sound.add("music", { loop: true }); // can add more in this config args; speed, mute, volume
     this.music.play();
     this.pop = this.sound.add("pop");
+
+    this.positioning = responsivePositioning(this.game);
     // add tiled background for scrolling
-    this.bgTile = this.add.tileSprite(0, 0, 1024, 768, "background");
+    this.bgTile = this.add
+      .tileSprite(
+        0,
+        0,
+        this.game.scale.width,
+        this.game.scale.height,
+        "background"
+      )
+      .setDepth(0);
     this.bgTile.scale = 4;
 
-    this.add
+    const text = this.add
       .text(
-        512,
-        84,
-        "Control the bubble by tilting your head left or right\nSee how far you can get without popping!",
+        this.getTopBarTextPositionX(),
+        this.getTopBarTextPositionY(),
+        "Control the bubble by tilting your head left or right. See how far you can get without popping!",
         {
-          fontFamily: "Arial Black",
-          fontSize: 38,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeThickness: 8,
-          align: "center",
+          ...this.positioning.getFontRegular(),
+          wordWrap: {
+            width: this.getTopBarTextWidth(),
+          },
         }
       )
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0)
+      .setDepth(5);
+
+    this.add
+      .rectangle(
+        0,
+        0,
+        this.game.scale.width,
+        this.getTopBarHeight(text.height),
+        0x000000,
+        0.75
+      )
+      .setOrigin(0, 0)
+      .setDepth(4);
+
     this.add.image(512, 768, "cloud-sky");
 
     // add bubble, that won't fall off screen
@@ -110,5 +132,21 @@ export class Game extends Scene {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+  }
+
+  getTopBarTextWidth() {
+    return this.positioning.getScaleX() * (1024 - 64);
+  }
+
+  getTopBarTextPositionX() {
+    return this.positioning.getCenteredPositionX();
+  }
+
+  getTopBarTextPositionY() {
+    return this.positioning.getScaleY() * 16;
+  }
+
+  getTopBarHeight(textHeight) {
+    return textHeight + 32 * this.positioning.getScaleY();
   }
 }
