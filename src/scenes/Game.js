@@ -5,15 +5,16 @@ import { FacePad } from "../plugins/facepad";
 export class Game extends Scene {
   constructor() {
     super("Game");
+    this.intervalId = null;
+  }
+
+  create() {
     this.player;
     this.cursors;
     this.bgTile;
     this.obstacle;
     this.rock;
     this.rockGroup = [];
-  }
-
-  create() {
     this.fp = FacePad;
     // add tiled background for scrolling
     this.bgTile = this.add.tileSprite(0, 0, 1024, 768, "background");
@@ -43,10 +44,9 @@ export class Game extends Scene {
     this.player.scale = 0.25;
 
     this.obstacle = this.physics.add.staticGroup();
-    // add rock obstacle every 2-8 seconds
-    setInterval(() => {
-      this.createObstacle();
-    }, Phaser.Math.Between(2000, 8000));
+    // add rock obstacle at start & every 2-8 seconds
+    this.createObstacle();
+    this.startInterval();
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this.input.once("pointerdown", () => {
@@ -63,13 +63,6 @@ export class Game extends Scene {
       rock.refreshBody();
     });
 
-    // move the bubble on keys
-    // if (this.cursors.left.isDown) {
-    //   this.player.setVelocityX(-120);
-    // } else if (this.cursors.right.isDown) {
-    //   this.player.setVelocityX(120);
-    // }
-
     // Use FacePad Value
     const val = this.fp.value;
     this.player.setVelocityX(val * 10);
@@ -77,9 +70,11 @@ export class Game extends Scene {
   hitObstacle() {
     this.scene.start("GameOver");
     this.scene.stop("Game");
+    this.clearInterval();
   }
   // helper function to create obstacles at random intervals/positions
   createObstacle() {
+    // if (this. != "Game") return;
     const newRock = this.obstacle
       .create(Math.random() * 1000, 0, "rock")
       .refreshBody();
@@ -93,19 +88,17 @@ export class Game extends Scene {
     );
     this.rockGroup.push(newRock);
   }
-  // helper function to create obstacles at random intervals/positions
-  createObstacle() {
-    const newRock = this.obstacle
-      .create(Math.random() * 1000, 0, "rock")
-      .refreshBody();
-    newRock.scale = 0.25;
-    this.physics.add.overlap(
-      this.player,
-      newRock,
-      this.hitObstacle,
-      null,
-      this
-    );
-    this.rockGroup.push(newRock);
+
+  startInterval() {
+    this.intervalId = setInterval(() => {
+      this.createObstacle();
+    }, Phaser.Math.Between(2000, 8000));
+  }
+
+  clearInterval() {
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 }
