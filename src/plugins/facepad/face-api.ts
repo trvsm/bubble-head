@@ -1,7 +1,8 @@
 import * as faceapi from "face-api.js";
 import { getFaceRollAngle } from "./get-roll-angle";
 
-const BASE_PATH = "";
+// Set the base path so that when it's deployed to GitHub pages it still works
+const BASE_PATH = window.location.pathname;
 
 const MODEL_URL = `${BASE_PATH}/models`;
 
