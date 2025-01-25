@@ -1,7 +1,9 @@
 import * as faceapi from "face-api.js";
 import { getFaceRollAngle } from "./get-roll-angle";
 
-const MODEL_URL = "/models";
+const BASE_PATH = "/bubble-head";
+
+const MODEL_URL = `${BASE_PATH}/models`;
 
 faceapi.loadTinyFaceDetectorModel(MODEL_URL);
 faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
