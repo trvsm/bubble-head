@@ -9,6 +9,7 @@ export class Game extends Scene {
     this.cursors;
     this.bgTile;
     this.obstacle;
+    this.rock;
   }
 
   create() {
@@ -42,11 +43,11 @@ export class Game extends Scene {
 
     // add rock to bump into
     this.obstacle = this.physics.add.staticGroup();
-    this.obstacle.create(512, 0, "rock").refreshBody();
-    this.obstacle.scale = 0.25;
+    this.rock = this.obstacle.create(512, 0, "rock").refreshBody();
+    this.rock.scale = 0.25;
     this.physics.add.overlap(
       this.player,
-      this.obstacle,
+      this.rock,
       this.hitObstacle,
       null,
       this
@@ -63,6 +64,8 @@ export class Game extends Scene {
     // move the tile background
     this.bgTile.tilePositionY -= 1;
     // TODO: set the position of obstacle to move down
+    this.rock.setPosition(512, this.rock.y + 1);
+    this.rock.refreshBody();
 
     // move the bubble on keys
     // if (this.cursors.left.isDown) {
@@ -75,7 +78,7 @@ export class Game extends Scene {
     const val = this.fp.value;
     this.player.setVelocityX(val * 10);
   }
-  hitObstacle(player, obstacle) {
+  hitObstacle() {
     this.scene.start("GameOver");
   }
 }
