@@ -53,15 +53,12 @@ export class Game extends Scene {
 
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.input.once("pointerdown", () => {
-      this.scene.start("GameOver");
-    });
   }
 
   update() {
     // move the tile background
     this.bgTile.tilePositionY -= 1;
-    // TODO: set the position of obstacle to move down
+    // move the rock, refresh to update physics body
     this.rock.setPosition(512, this.rock.y + 1);
     this.rock.refreshBody();
 
@@ -74,5 +71,9 @@ export class Game extends Scene {
   }
   hitObstacle() {
     this.scene.start("GameOver");
+  }
+  // TODO: helper function to create obstacles at random intervals/positions
+  createObstacle(){
+    this.obstacle.create(512, 0, "rock").refreshBody();
   }
 }
