@@ -508,7 +508,7 @@ export class Game extends Scene {
         this.createLeaf();
       }
 
-      if (random < 0.99) {
+      if (random < 0.5) {
         this.createBubble();
       }
     }, 4200 / (this.currentVelocity * 1.07 ** 4));
