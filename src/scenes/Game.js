@@ -3,7 +3,7 @@ import { FacePad } from "../plugins/facepad";
 import { responsivePositioning } from "../plugins/responsive";
 
 const ROCK_SIZE = {
-  WIDTH: 992,
+  WIDTH: 600,
   HEIGHT: 389,
 };
 
@@ -22,6 +22,7 @@ export class Game extends Scene {
     this.player;
     this.cursors;
     this.bgTile;
+    this.bgWall;
     this.obstacle;
     this.rock;
     this.rockGroup = [];
@@ -43,6 +44,8 @@ export class Game extends Scene {
       )
       .setDepth(0);
     this.bgTile.scale = 4;
+
+    this.bgWall = this.add.tileSprite();
 
     // Instructions text
     const text = this.add
@@ -90,14 +93,28 @@ export class Game extends Scene {
       frameRate: 8,
       repeat: -1,
     });
-    this.player.play("idle");
-
+    // gameover pop animation
     this.popAnimation = this.anims.create({
-      key: "pop",
-      frames: [{ key: "pop3" }, { key: "pop4" }],
+        key: "pop",
+        frames: [{ key: "pop3" }, { key: "pop4" }],
       frameRate: 4,
       repeat: -1,
     });
+    // animate leaf
+    this.leafAnimation = this.anims.create({
+        key: "leaf",
+        frames: [
+            { key: "rock" },
+            { key: "leafFrame2" },
+            { key: "leafFrame3" },
+            { key: "leafFrame4" },
+        ],
+        frameRate: 4,
+        repeat: -1,
+    });
+
+    // run animations
+    this.player.play("idle");
 
     const playerScale = this.positioning.getScaledSprite(
       BUBBLE_SIZE.WIDTH,
@@ -145,6 +162,7 @@ export class Game extends Scene {
     const newRock = this.obstacle
       .create(Math.random() * this.game.scale.width, 0, "rock")
       .refreshBody();
+      newRock.play("leaf");
 
     const rockScale = this.positioning.getScaledSprite(
       ROCK_SIZE.WIDTH,
