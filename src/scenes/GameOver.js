@@ -43,7 +43,7 @@ export class GameOver extends Scene {
       .setOrigin(0.5, 0);
 
     this.input.once("pointerdown", () => {
-      this.scene.start("MainMenu");
+      this.scene.start("Game");
     });
   }
 
