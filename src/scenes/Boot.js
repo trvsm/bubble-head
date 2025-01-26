@@ -23,6 +23,7 @@ export class Boot extends Scene {
     this.load.image("logo", "logo.png");
     this.load.image("title", "assets/title.png")
     this.load.image("gameover", 'assets/game-over.png')
+    this.load.image("overbubble","assets/overbubble.png")
 
     /**
      * ANIMATION FRAMES

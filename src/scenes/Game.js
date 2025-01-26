@@ -109,6 +109,16 @@ export class Game extends Scene {
       frameRate: 4,
       repeat: -1,
     });
+    // animateoverbubble
+    this.overbubble = this.anims.create({
+      key: "overbubble",
+      frames: [{ key: "overbubble" }, { key: "bubble" }],
+    });
+    //animate unbubble
+    this.unbubble = this.anims.create({
+      key: "unbubble",
+      frames: [{ key: "bubble" }, { key: "overbubble" }],
+    });
 
     const playerScale = this.positioning.getScaledSprite(
       BUBBLE_SIZE.WIDTH,
@@ -281,6 +291,7 @@ export class Game extends Scene {
       this.player.setData("lives", this.player.getData("lives") - 1);
       this.pop.play({ volume: 1 });
       if (this.bubble) {
+        this.bubble.play("unbubble");
         this.bubble.destroy();
         this.bubble = null;
       }
@@ -433,6 +444,7 @@ export class Game extends Scene {
 
   handleBubbleHit() {
     if (this.bubble.getData("isAttached")) return;
+    this.bubble.play("overbubble");
     this.bubble.setData("isAttached", true);
     this.player.setData("lives", this.player.getData("lives") + 1);
     this.bubbleMerge.play({ volume: 1 });
@@ -452,7 +464,7 @@ export class Game extends Scene {
     if (this.bubble) return;
 
     const newBubble = this.obstacle
-      .create(Math.random() * this.game.scale.width, -200, "bubble")
+      .create(Math.random() * this.game.scale.width, -200, "overbubble")
       .refreshBody();
 
     newBubble.setData("isAttached", false);
@@ -487,7 +499,7 @@ export class Game extends Scene {
         this.createLeaf();
       }
 
-      if (random < 0.3) {
+      if (random < 0.99) {
         this.createBubble();
       }
     }, 4200 / (this.currentVelocity * 1.07 ** 4));
