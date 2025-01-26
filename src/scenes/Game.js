@@ -244,9 +244,9 @@ export class Game extends Scene {
       return;
     }
     if (!this.currentVelocity) return;
+    this.pop.play({ volume: 1 });
     this.player.play("pop");
     this.anvil = null;
-    this.pop.play({ volume: 1 });
     this.currentVelocity = 0;
     setTimeout(() => {
       this.scene.start("GameOver");
