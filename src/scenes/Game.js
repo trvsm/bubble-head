@@ -16,6 +16,7 @@ export class Game extends Scene {
   constructor() {
     super("Game");
     this.intervalId = null;
+    this.currentVelocity = 1;
   }
 
   create() {
@@ -105,7 +106,7 @@ export class Game extends Scene {
     this.bgTile.tilePositionY -= 1;
     // move the rock, refresh to update physics body
     this.rockGroup.forEach((rock) => {
-      rock.setPosition(rock.x, rock.y + 1);
+      rock.setPosition(rock.x, rock.y + this.currentVelocity);
       rock.refreshBody();
     });
 
@@ -149,12 +150,23 @@ export class Game extends Scene {
     this.intervalId = setInterval(() => {
       this.createObstacle();
     }, Phaser.Math.Between(2000, 8000));
+
+    this.velocityIntervalId = setInterval(() => {
+      // Increment the velocity every second
+      this.currentVelocity += 0.1;
+    }, 1000);
   }
 
   clearInterval() {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
       this.intervalId = null;
+    }
+    if (this.velocityIntervalId !== null) {
+      clearInterval(this.velocityIntervalId);
+      this.velocityIntervalId = null;
+      // Reset the velocity
+      this.currentVelocity = 1;
     }
   }
 
