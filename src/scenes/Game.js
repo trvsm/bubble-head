@@ -150,12 +150,13 @@ export class Game extends Scene {
 
     // Use FacePad Value
     const val = this.fp.xValue;
+    // Move the bubble left and right based on the value
     this.player.setVelocityX(val * 10);
 
-    // console.log(this.player.y, this.game.scale.height);
+    // When the player is happy, then we let the bubble start to bounce
     if (this.player.y > this.game.scale.height - 48) {
       this.player.setVelocityY(
-        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -600)
+        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -450)
       );
     }
 
