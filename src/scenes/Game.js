@@ -94,6 +94,7 @@ export class Game extends Scene {
     this.player.setCollideWorldBounds(true);
     this.player.setBounce(0.2);
     this.player.scale = 3;
+    this.player.setDepth(1);
 
     /**
      * ANIMATIONS
