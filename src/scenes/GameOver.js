@@ -15,7 +15,7 @@ export class GameOver extends Scene {
     const over = this.add
       .image(
         this.positioning.getCenteredPositionX(),
-        this.getLogoY() -50 * this.positioning.getScaleY(),
+        this.getLogoY() + 50 * this.positioning.getScaleY(),
         "gameover"
       )
       .setOrigin(0.5, 1);
