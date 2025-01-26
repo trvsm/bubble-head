@@ -20,6 +20,7 @@ export class Boot extends Scene {
     this.load.image("background", "assets/blue.png");
     this.load.image("wallLeft", "assets/border_L.png");
     this.load.image("wallRight", "assets/border_R.png");
+    this.load.image("logo", "logo.png");
 
     /**
      * ANIMATION FRAMES

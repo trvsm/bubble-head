@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 import { FacePad } from "../plugins/facepad";
 import { responsivePositioning } from "../plugins/responsive";
 import { isCircleIntersectingTriangle } from "../plugins/triangle-circle-intersect";
-import { scoreBox } from "../plugins/score-box";
+import { scoreKeeper } from "../plugins/score-box";
 
 const ROCK_SIZE = {
   WIDTH: 600,
@@ -17,17 +17,16 @@ const BUBBLE_SIZE = {
 export class Game extends Scene {
   constructor() {
     super("Game");
-    this.intervalId = null;
-    this.currentVelocity = 1;
-    this.score = 0;
   }
 
   create() {
+    this.intervalId = null;
+    this.currentVelocity = 1;
+
     this.viewWidth = this.game.scale.width;
     this.viewHeight = this.game.scale.height;
 
     this.player;
-    this.cursors;
     this.bgTile;
     this.bgWall;
     this.obstacle;
@@ -37,9 +36,8 @@ export class Game extends Scene {
     this.hands = [];
     this.anvil;
 
-    this.scoreBox = scoreBox();
-    this.scoreBox.setScore(this.score);
-    this.scoreBox.showScore();
+    this.scoreBox = scoreKeeper;
+    this.scoreBox.showScoreBox();
 
     this.fp = FacePad;
     /**
@@ -66,36 +64,6 @@ export class Game extends Scene {
     this.bgWall = this.add.tileSprite();
 
     /**
-     * DISPLAY PLAYER INSTRUCTIONS ON BACKGROUND
-     */
-    const text = this.add
-      .text(
-        this.getTopBarTextPositionX(),
-        this.getTopBarTextPositionY(),
-        "Control the bubble by tilting your head left or right. See how far you can get without popping!",
-        {
-          ...this.positioning.getFontRegular(),
-          wordWrap: {
-            width: this.getTopBarTextWidth(),
-          },
-        }
-      )
-      .setOrigin(0.5, 0)
-      .setDepth(5);
-    // The background for the text
-    this.add
-      .rectangle(
-        0,
-        0,
-        this.game.scale.width,
-        this.getTopBarHeight(text.height),
-        0x000000,
-        0.75
-      )
-      .setOrigin(0, 0)
-      .setDepth(4);
-
-    /**
      * PLAYER BUBBLE, stay on screen
      */
     this.player = this.physics.add.sprite(
@@ -105,7 +73,6 @@ export class Game extends Scene {
     );
     this.player.setCollideWorldBounds(true);
     this.player.setBounce(0.2);
-    this.player.scale = 3;
     this.player.setDepth(1);
 
     /**
@@ -153,11 +120,6 @@ export class Game extends Scene {
     // add rock obstacle at start & every 2-8 seconds
     // this.createObstacle();
     this.startInterval();
-
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.input.once("pointerdown", () => {
-      this.scene.start("GameOver");
-    });
   }
 
   update() {
@@ -211,12 +173,13 @@ export class Game extends Scene {
 
     // Use FacePad Value
     const val = this.fp.xValue;
+    // Move the bubble left and right based on the value
     this.player.setVelocityX(val * 10);
 
-    // console.log(this.player.y, this.game.scale.height);
+    // When the player is happy, then we let the bubble start to bounce
     if (this.player.y > this.game.scale.height - 48) {
       this.player.setVelocityY(
-        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -600)
+        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -300)
       );
     }
 
@@ -238,21 +201,22 @@ export class Game extends Scene {
       this.cliffs.filter((cliff) => cliff.y > this.player.y).length +
       this.hands.filter((hand) => hand.y > this.player.y).length;
 
-    this.score += numberOfObstaclesPassed;
-    this.scoreBox.setScore(this.score);
+    this.scoreBox.setScore(
+      this.scoreBox.currentScore + numberOfObstaclesPassed
+    );
   }
 
   hitObstacle() {
+    if (!this.currentVelocity) return;
     this.player.play("pop");
-    this.pop.play();
     this.anvil=null;
+    this.pop.play({ volume: 1 });
     this.currentVelocity = 0;
     setTimeout(() => {
       this.scene.start("GameOver");
       this.scene.stop("Game");
-      this.score = 0;
-      this.scoreBox.hideScore();
-      this.scoreBox.setScore(this.score);
+      this.scoreBox.resetScore();
+      this.scoreBox.hideScoreBox();
     }, 1200);
     this.clearInterval();
   }
@@ -313,7 +277,7 @@ export class Game extends Scene {
       .create(0, -256, `cliff-${side}`)
       .refreshBody();
 
-    newCliff.setScale(this.positioning.getScaleX() * 1.2);
+    newCliff.setScale(this.positioning.getScaleX() * 1.75);
     if (side === "l") {
       newCliff.setOrigin(0, 0);
     } else {
@@ -381,6 +345,7 @@ export class Game extends Scene {
 
   startInterval() {
     this.intervalId = setInterval(() => {
+      if (!this.currentVelocity) return;
       const random = Math.random();
       if (random < 0.1) {
         this.createAnvil();

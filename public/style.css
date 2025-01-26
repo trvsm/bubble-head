@@ -2,22 +2,24 @@ body {
   margin: 0;
   padding: 0;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #000000;
+  background-color: #008af8;
 }
 
 #app {
-  width: 100%;
+  max-width: 100%;
+  width: 560px;
   height: 90vh;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: auto;
 }
 
 /* FacePad */
 #facepad {
   position: fixed;
-  bottom: 1rem;
+  top: 1rem;
   left: 1rem;
   width: 240px;
   max-width: 30vw;
@@ -27,6 +29,7 @@ body {
 #facepad video {
   transform: scaleX(-1);
   max-width: 100%;
+  opacity: 0.8;
 }
 
 #score-box {
