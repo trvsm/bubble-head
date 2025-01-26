@@ -156,7 +156,7 @@ export class Game extends Scene {
     // When the player is happy, then we let the bubble start to bounce
     if (this.player.y > this.game.scale.height - 48) {
       this.player.setVelocityY(
-        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -450)
+        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -300)
       );
     }
 
