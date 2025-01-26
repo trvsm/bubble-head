@@ -3,7 +3,7 @@ import { FacePad } from "../plugins/facepad";
 import { responsivePositioning } from "../plugins/responsive";
 
 const ROCK_SIZE = {
-  WIDTH: 992,
+  WIDTH: 600,
   HEIGHT: 389,
 };
 
@@ -23,17 +23,22 @@ export class Game extends Scene {
     this.player;
     this.cursors;
     this.bgTile;
+    this.bgWall;
     this.obstacle;
     this.rock;
     this.rockGroup = [];
     this.fp = FacePad;
-    // sound effects: background music & bubble pop
+    /**
+     * SOUND EFFECTS: background music & bubble pop
+     */
     this.music = this.sound.add("music", { loop: true }); // can add more in this config args; speed, mute, volume
     this.music.play();
     this.pop = this.sound.add("pop");
 
     this.positioning = responsivePositioning(this.game);
-    // add tiled background for scrolling
+    /**
+     * TILED BACKGROUND
+     */
     this.bgTile = this.add
       .tileSprite(
         0,
@@ -45,7 +50,11 @@ export class Game extends Scene {
       .setDepth(0);
     this.bgTile.scale = 4;
 
-    // Instructions text
+    this.bgWall = this.add.tileSprite();
+
+    /**
+     * DISPLAY PLAYER INSTRUCTIONS ON BACKGROUND
+     */
     const text = this.add
       .text(
         this.getTopBarTextPositionX(),
@@ -60,7 +69,6 @@ export class Game extends Scene {
       )
       .setOrigin(0.5, 0)
       .setDepth(5);
-
     // The background for the text
     this.add
       .rectangle(
@@ -74,7 +82,9 @@ export class Game extends Scene {
       .setOrigin(0, 0)
       .setDepth(4);
 
-    // add bubble, that won't fall off screen
+    /**
+     * PLAYER BUBBLE, stay on screen
+     */
     this.player = this.physics.add.sprite(
       this.positioning.getCenteredPositionX(),
       this.positioning.getCenteredPositionY(),
@@ -82,6 +92,39 @@ export class Game extends Scene {
     );
     this.player.setCollideWorldBounds(true);
     this.player.setBounce(0.2);
+    this.player.scale = 3;
+
+    /**
+     * ANIMATIONS
+     */
+    // animate player bubble
+    this.animate = this.anims.create({
+      key: "idle",
+      frames: [{ key: "bubble" }, { key: "frame2" }, { key: "frame4" }],
+      frameRate: 8,
+      repeat: -1,
+    });
+
+    this.player.play("idle");
+    // gameover pop animation
+    this.popAnimation = this.anims.create({
+      key: "pop",
+      frames: [{ key: "pop3" }, { key: "pop4" }],
+      frameRate: 4,
+      repeat: -1,
+    });
+    // animate leaf
+    this.leafAnimation = this.anims.create({
+      key: "leaf",
+      frames: [
+        { key: "rock" },
+        { key: "leafFrame2" },
+        { key: "leafFrame3" },
+        { key: "leafFrame4" },
+      ],
+      frameRate: 4,
+      repeat: -1,
+    });
 
     const playerScale = this.positioning.getScaledSprite(
       BUBBLE_SIZE.WIDTH,
@@ -89,6 +132,9 @@ export class Game extends Scene {
     );
     this.player.setDisplaySize(playerScale.width, playerScale.height);
 
+    /**
+     * OBSTACLES
+     */
     this.obstacle = this.physics.add.staticGroup();
     // add rock obstacle at start & every 2-8 seconds
     this.createObstacle();
@@ -115,7 +161,7 @@ export class Game extends Scene {
     this.player.setVelocityX(val * 10);
   }
   hitObstacle() {
-    this.add.image(512, 384, "explode");
+    this.player.play("pop");
     this.pop.play();
     this.music.stop();
     setTimeout(() => {
@@ -129,6 +175,7 @@ export class Game extends Scene {
     const newRock = this.obstacle
       .create(Math.random() * this.game.scale.width, 0, "rock")
       .refreshBody();
+    newRock.play("leaf");
 
     const rockScale = this.positioning.getScaledSprite(
       ROCK_SIZE.WIDTH,
