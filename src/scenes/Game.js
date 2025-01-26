@@ -464,14 +464,16 @@ export class Game extends Scene {
       const random = Math.random();
       if (random < 0.05) {
         this.createAnvil();
-      } else if (random < 0.1) {
-        this.createBubble();
       } else if (random < 0.3) {
         this.createHand();
       } else if (random < 0.6) {
         this.createCliff();
       } else {
         this.createLeaf();
+      }
+
+      if (random < 0.3) {
+        this.createBubble();
       }
     }, 4200 / (this.currentVelocity * 1.07 ** 4));
 
