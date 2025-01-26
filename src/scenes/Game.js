@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 import { FacePad } from "../plugins/facepad";
 import { responsivePositioning } from "../plugins/responsive";
 import { isCircleIntersectingTriangle } from "../plugins/triangle-circle-intersect";
-import { scoreBox } from "../plugins/score-box";
+import { scoreKeeper } from "../plugins/score-box";
 
 const ROCK_SIZE = {
   WIDTH: 600,
@@ -17,17 +17,16 @@ const BUBBLE_SIZE = {
 export class Game extends Scene {
   constructor() {
     super("Game");
-    this.intervalId = null;
-    this.currentVelocity = 1;
-    this.score = 0;
   }
 
   create() {
+    this.intervalId = null;
+    this.currentVelocity = 1;
+
     this.viewWidth = this.game.scale.width;
     this.viewHeight = this.game.scale.height;
 
     this.player;
-    this.cursors;
     this.bgTile;
     this.bgWall;
     this.obstacle;
@@ -36,9 +35,8 @@ export class Game extends Scene {
     this.cliffs = [];
     this.hands = [];
 
-    this.scoreBox = scoreBox();
-    this.scoreBox.setScore(this.score);
-    this.scoreBox.showScore();
+    this.scoreBox = scoreKeeper;
+    this.scoreBox.showScoreBox();
 
     this.fp = FacePad;
     /**
@@ -62,36 +60,6 @@ export class Game extends Scene {
     this.bgTile.scale = 4;
 
     this.bgWall = this.add.tileSprite();
-
-    /**
-     * DISPLAY PLAYER INSTRUCTIONS ON BACKGROUND
-     */
-    const text = this.add
-      .text(
-        this.getTopBarTextPositionX(),
-        this.getTopBarTextPositionY(),
-        "Control the bubble by tilting your head left or right. See how far you can get without popping!",
-        {
-          ...this.positioning.getFontRegular(),
-          wordWrap: {
-            width: this.getTopBarTextWidth(),
-          },
-        }
-      )
-      .setOrigin(0.5, 0)
-      .setDepth(5);
-    // The background for the text
-    this.add
-      .rectangle(
-        0,
-        0,
-        this.game.scale.width,
-        this.getTopBarHeight(text.height),
-        0x000000,
-        0.75
-      )
-      .setOrigin(0, 0)
-      .setDepth(4);
 
     /**
      * PLAYER BUBBLE, stay on screen
@@ -150,11 +118,6 @@ export class Game extends Scene {
     // add rock obstacle at start & every 2-8 seconds
     this.createObstacle();
     this.startInterval();
-
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.input.once("pointerdown", () => {
-      this.scene.start("GameOver");
-    });
   }
 
   update() {
@@ -204,20 +167,21 @@ export class Game extends Scene {
       this.cliffs.filter((cliff) => cliff.y > this.player.y).length +
       this.hands.filter((hand) => hand.y > this.player.y).length;
 
-    this.score += numberOfObstaclesPassed;
-    this.scoreBox.setScore(this.score);
+    this.scoreBox.setScore(
+      this.scoreBox.currentScore + numberOfObstaclesPassed
+    );
   }
 
   hitObstacle() {
+    if (!this.currentVelocity) return;
     this.player.play("pop");
     this.pop.play();
     this.currentVelocity = 0;
     setTimeout(() => {
       this.scene.start("GameOver");
       this.scene.stop("Game");
-      this.score = 0;
-      this.scoreBox.hideScore();
-      this.scoreBox.setScore(this.score);
+      this.scoreBox.resetScore();
+      this.scoreBox.hideScoreBox();
     }, 1200);
     this.clearInterval();
   }
@@ -323,6 +287,7 @@ export class Game extends Scene {
 
   startInterval() {
     this.intervalId = setInterval(() => {
+      if (!this.currentVelocity) return;
       const random = Math.random();
 
       if (random < 0.33) {

@@ -20,13 +20,13 @@ export function responsivePositioning(game: Phaser.Game) {
     },
 
     getFontRegular() {
-      const fontSize = 16 * this.getScaleY();
+      const fontSize = 24 * this.getScaleY();
       return {
         fontFamily: "Arial Black",
         fontSize,
         color: "#ffffff",
         stroke: "#000000",
-        strokeThickness: 6,
+        strokeThickness: 2,
         align: "center",
         wordWrap: { width: game.scale.width - 100 * this.getScaleX() },
       };

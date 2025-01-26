@@ -24,7 +24,7 @@ export class MainMenu extends Scene {
       .text(
         this.positioning.getCenteredPositionX(),
         this.getLogoY() + 10 * this.positioning.getScaleY(),
-        "Tap the screen to Start",
+        "Tap the screen to Start\n\nTilt your head to move the bubble. Avoid the obstacles and see how far you can get without popping!",
         this.positioning.getFontRegular()
       )
       .setOrigin(0.5, 0);
