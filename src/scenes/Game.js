@@ -129,7 +129,7 @@ export class Game extends Scene {
       );
       this.anvil.refreshBody();
     }
- 
+
     // Move the leafs
     this.leafs.forEach((leaf) => {
       const swayLeft = leaf.getData("swayLeft");
@@ -232,7 +232,7 @@ export class Game extends Scene {
   hitObstacle() {
     if (!this.currentVelocity) return;
     this.player.play("pop");
-    this.anvil=null;
+    this.anvil = null;
     this.pop.play({ volume: 1 });
     this.currentVelocity = 0;
     setTimeout(() => {
@@ -354,10 +354,11 @@ export class Game extends Scene {
 
   createAnvil() {
     this.anvil = null;
-    
+
     const newAnvil = this.obstacle
-      .create(Math.random() * this.game.scale.width, 0, "anvil").refreshBody();
-    const anvilScale = this.positioning.getScaledSprite(1024, 1024, 0.2);
+      .create(Math.random() * this.game.scale.width, -1200, "anvil")
+      .refreshBody();
+    const anvilScale = this.positioning.getScaledSprite(96, 42, 1.5);
     newAnvil.setDisplaySize(anvilScale.width, anvilScale.height);
 
     this.physics.add.overlap(
@@ -368,19 +369,19 @@ export class Game extends Scene {
       this
     );
     this.anvil = newAnvil;
-    this.whistle.play();
+    this.whistle.play({ rate: 0.3 });
   }
 
   startInterval() {
     this.intervalId = setInterval(() => {
       if (!this.currentVelocity) return;
       const random = Math.random();
-      if (random < 0.1) {
+      if (random < 0.05) {
         this.createAnvil();
       }
       if (random < 0.3) {
         this.createHand();
-      } else if (random < 0.4) {
+      } else if (random < 0.45) {
         this.createCliff();
       } else {
         this.createLeaf();
