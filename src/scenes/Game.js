@@ -34,6 +34,7 @@ export class Game extends Scene {
     this.cliffs = [];
     this.hands = [];
     this.anvil;
+    this.bubble;
 
     this.scoreBox = scoreKeeper;
     this.scoreBox.showScoreBox();
@@ -44,6 +45,7 @@ export class Game extends Scene {
      */
     this.pop = this.sound.add("pop");
     this.whistle = this.sound.add("whistle");
+    this.bubbleMerge = this.sound.add("merge");
 
     this.positioning = responsivePositioning(this.game);
     /**
@@ -121,7 +123,7 @@ export class Game extends Scene {
   }
 
   update() {
-    // move the rock, refresh to update physics body
+    // move the anvil, refresh to update physics body
     if (this.anvil) {
       this.anvil.setPosition(
         this.anvil.x,
@@ -227,6 +229,43 @@ export class Game extends Scene {
     this.scoreBox.setScore(
       this.scoreBox.currentScore + numberOfObstaclesPassed
     );
+
+    // When we have a bubble on screen
+    if (this.bubble) {
+      const isAttached = this.bubble.getData("isAttached");
+
+      if (isAttached) {
+        // If the bubble is attached to the player, move it with the player
+        // Move towards the player
+        const dx = this.player.x - this.bubble.x;
+        const dy = this.player.y - this.bubble.y;
+        this.bubble.setPosition(this.bubble.x + dx, this.bubble.y + dy);
+
+        // If the bubble is not at giant size, make it bigger
+        const targetScale = 1.5 * this.player.scale;
+        if (this.bubble.scale < targetScale) {
+          const dScale = targetScale - this.bubble.scale;
+          this.bubble.setScale(this.bubble.scale + dScale * 0.5);
+        }
+      } else {
+        // The bubble is floating down the screen
+        // If the bubble is below the screen, destroy it
+        if (
+          this.bubble.y >
+          this.game.scale.height + 10 * this.positioning.getScaleY()
+        ) {
+          this.bubble.destroy();
+          this.bubble = null;
+        } else {
+          // Move the bubble down the screen
+          this.bubble.setPosition(
+            this.bubble.x,
+            this.bubble.y + this.currentVelocity
+          );
+        }
+      }
+      this.bubble?.refreshBody();
+    }
   }
 
   hitObstacle() {
@@ -372,16 +411,64 @@ export class Game extends Scene {
     this.whistle.play({ rate: 0.3 });
   }
 
+  handleBubbleHit() {
+    if (this.bubble.getData("isAttached")) return;
+    this.bubble.setData("isAttached", true);
+    this.bubbleMerge.play({ volume: 1 });
+  }
+
+  checkIfBubbleAndPlayerCollides(player, bubble) {
+    return (
+      Math.abs(player.x - bubble.x) < 10 && Math.abs(player.y - bubble.y) < 10
+    );
+  }
+
+  /**
+   * Create a bubble that the player can collect for lives
+   */
+  createBubble() {
+    // If there's already a bubble, don't create another one
+    if (this.bubble) return;
+
+    const newBubble = this.obstacle
+      .create(
+        // Math.random() * this.game.scale.width,
+        this.positioning.getCenteredPositionX(),
+        // TODO: Set above the line once completed
+        0,
+        "bubble"
+      )
+      .refreshBody();
+
+    newBubble.setData("isAttached", false);
+
+    const bubbleScale = this.positioning.getScaledSprite(
+      BUBBLE_SIZE.WIDTH,
+      BUBBLE_SIZE.HEIGHT
+    );
+    newBubble.setDisplaySize(bubbleScale.width, bubbleScale.height);
+
+    this.physics.add.overlap(
+      this.player,
+      newBubble,
+      this.handleBubbleHit,
+      this.checkIfBubbleAndPlayerCollides,
+      this
+    );
+    this.bubble = newBubble;
+  }
+
   startInterval() {
     this.intervalId = setInterval(() => {
       if (!this.currentVelocity) return;
       const random = Math.random();
       if (random < 0.05) {
         this.createAnvil();
-      }
-      if (random < 0.3) {
+      } else if (random < 0.1) {
+        this.createBubble();
+      } else if (random < 0.3) {
         this.createHand();
-      } else if (random < 0.45) {
+      } else if (random < 0.6) {
         this.createCliff();
       } else {
         this.createLeaf();
