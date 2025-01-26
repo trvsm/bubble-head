@@ -279,6 +279,11 @@ export class Game extends Scene {
       // debounce the function
       this.cooldown = true;
       this.player.setData("lives", this.player.getData("lives") - 1);
+      this.pop.play({ volume: 1 });
+      if (this.bubble) {
+        this.bubble.destroy();
+        this.bubble = null;
+      }
       setTimeout(() => {
         this.cooldown = false;
       }, 800);
@@ -429,12 +434,13 @@ export class Game extends Scene {
   handleBubbleHit() {
     if (this.bubble.getData("isAttached")) return;
     this.bubble.setData("isAttached", true);
+    this.player.setData("lives", this.player.getData("lives") + 1);
     this.bubbleMerge.play({ volume: 1 });
   }
 
   checkIfBubbleAndPlayerCollides(player, bubble) {
     return (
-      Math.abs(player.x - bubble.x) < 10 && Math.abs(player.y - bubble.y) < 10
+      Math.abs(player.x - bubble.x) < 15 && Math.abs(player.y - bubble.y) < 15
     );
   }
 
@@ -446,13 +452,7 @@ export class Game extends Scene {
     if (this.bubble) return;
 
     const newBubble = this.obstacle
-      .create(
-        // Math.random() * this.game.scale.width,
-        this.positioning.getCenteredPositionX(),
-        // TODO: Set above the line once completed
-        0,
-        "bubble"
-      )
+      .create(Math.random() * this.game.scale.width, -200, "bubble")
       .refreshBody();
 
     newBubble.setData("isAttached", false);
