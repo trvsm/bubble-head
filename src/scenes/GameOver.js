@@ -11,8 +11,6 @@ export class GameOver extends Scene {
 
     this.cameras.main.setBackgroundColor(0xff0000);
 
-    this.positioning.addBackgroundToScene(this).setAlpha(0.5);
-
     this.add
       .text(
         this.positioning.getCenteredPositionX(),

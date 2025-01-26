@@ -9,8 +9,6 @@ export class MainMenu extends Scene {
   create() {
     this.positioning = responsivePositioning(this.game);
 
-    this.positioning.addBackgroundToScene(this);
-
     this.add
       .text(
         this.positioning.getCenteredPositionX(),
