@@ -196,7 +196,7 @@ export class Game extends Scene {
   startInterval() {
     this.intervalId = setInterval(() => {
       this.createObstacle();
-    }, Phaser.Math.Between(2000, 8000));
+    }, Phaser.Math.Between(2000, 8000) - this.currentVelocity * 0.9);
 
     this.velocityIntervalId = setInterval(() => {
       // Increment the velocity every second
