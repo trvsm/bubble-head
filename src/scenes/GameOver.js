@@ -12,15 +12,18 @@ export class GameOver extends Scene {
 
     const sb = scoreKeeper;
 
-    this.add
-      .text(
+    const over = this.add
+      .image(
         this.positioning.getCenteredPositionX(),
-        this.positioning.getCenteredPositionY() -
-          48 * this.positioning.getScaleY(),
-        "You Popped!",
-        this.positioning.getFontLarge()
+        this.getLogoY() -50 * this.positioning.getScaleY(),
+        "gameover"
       )
       .setOrigin(0.5, 1);
+
+    over.setDisplaySize(
+      this.positioning.getScaleX() * 768,
+      this.positioning.getScaleX() * 768
+    );
 
     const { highScore, isNewHighScore, lastScore } = sb.getScores();
 
@@ -47,5 +50,8 @@ export class GameOver extends Scene {
     });
   }
 
-  update() {}
+  getLogoY() {
+    let y = this.game.scale.height / 2;
+    return y;
+  }
 }

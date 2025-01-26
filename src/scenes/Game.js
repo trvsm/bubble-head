@@ -38,6 +38,7 @@ export class Game extends Scene {
 
     this.scoreBox = scoreKeeper;
     this.scoreBox.showScoreBox();
+    this.cooldown = false;
 
     this.fp = FacePad;
     /**
@@ -75,6 +76,7 @@ export class Game extends Scene {
     this.player.setCollideWorldBounds(true);
     this.player.setBounce(0.2);
     this.player.setDepth(1);
+    this.player.setData("lives", 0);
 
     /**
      * ANIMATIONS
@@ -271,10 +273,21 @@ export class Game extends Scene {
   }
 
   hitObstacle() {
+    if (this.cooldown) return;
+    if (this.player.getData("lives") > 0) {
+      // decrement lives
+      // debounce the function
+      this.cooldown = true;
+      this.player.setData("lives", this.player.getData("lives") - 1);
+      setTimeout(() => {
+        this.cooldown = false;
+      }, 800);
+      return;
+    }
     if (!this.currentVelocity) return;
+    this.pop.play({ volume: 1 });
     this.player.play("pop");
     this.anvil = null;
-    this.pop.play({ volume: 1 });
     this.currentVelocity = 0;
     setTimeout(() => {
       this.scene.start("GameOver");
