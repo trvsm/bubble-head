@@ -58,6 +58,7 @@ export class Boot extends Scene {
     this.load.audio("pop", "assets/pop.mp3");
     this.load.audio("whistle", "assets/slide-whistle.mp3");
     this.load.audio("music", "assets/cloud-dancer.mp3");
+    this.load.audio("merge", "assets/bubble-merge.mp3");
   }
 
   create() {
