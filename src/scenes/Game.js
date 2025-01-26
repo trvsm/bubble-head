@@ -95,8 +95,8 @@ export class Game extends Scene {
     this.popAnimation = this.anims.create({
       key: "pop",
       frames: [{ key: "pop3" }, { key: "pop4" }],
-      frameRate: 2,
-      repeat: -1
+      frameRate: 4,
+      repeat: -1,
     });
 
     const playerScale = this.positioning.getScaledSprite(
