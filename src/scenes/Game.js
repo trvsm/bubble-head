@@ -176,8 +176,15 @@ export class Game extends Scene {
     });
 
     // Use FacePad Value
-    const val = this.fp.value;
+    const val = this.fp.xValue;
     this.player.setVelocityX(val * 10);
+
+    // console.log(this.player.y, this.game.scale.height);
+    if (this.player.y > this.game.scale.height - 48) {
+      this.player.setVelocityY(
+        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -600)
+      );
+    }
 
     // Clean up the obstacles that are off screen
     this.rockGroup = this.rockGroup.filter((rock) => {
