@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
 import { FacePad } from "../plugins/facepad";
 import { responsivePositioning } from "../plugins/responsive";
+import { isCircleIntersectingTriangle } from "../plugins/triangle-circle-intersect";
 
 const ROCK_SIZE = {
   WIDTH: 992,
@@ -22,10 +23,11 @@ export class Game extends Scene {
   create() {
     this.player;
     this.cursors;
-    this.bgTile;
     this.obstacle;
     this.rock;
     this.rockGroup = [];
+    this.cliffs = [];
+
     this.fp = FacePad;
     // sound effects: background music & bubble pop
     this.music = this.sound.add("music", { loop: true }); // can add more in this config args; speed, mute, volume
@@ -33,17 +35,6 @@ export class Game extends Scene {
     this.pop = this.sound.add("pop");
 
     this.positioning = responsivePositioning(this.game);
-    // add tiled background for scrolling
-    this.bgTile = this.add
-      .tileSprite(
-        0,
-        0,
-        this.game.scale.width,
-        this.game.scale.height,
-        "background"
-      )
-      .setDepth(0);
-    this.bgTile.scale = 4;
 
     // Instructions text
     const text = this.add
@@ -76,7 +67,7 @@ export class Game extends Scene {
 
     // add bubble, that won't fall off screen
     this.player = this.physics.add.sprite(
-      this.positioning.getCenteredPositionX(),
+      200 * this.positioning.getScaleX(),
       this.positioning.getCenteredPositionY(),
       "bubble"
     );
@@ -102,12 +93,16 @@ export class Game extends Scene {
   }
 
   update() {
-    // move the tile background
-    this.bgTile.tilePositionY -= 1;
     // move the rock, refresh to update physics body
     this.rockGroup.forEach((rock) => {
       rock.setPosition(rock.x, rock.y + this.currentVelocity);
       rock.refreshBody();
+    });
+
+    // Move the cliffs
+    this.cliffs.forEach((cliff) => {
+      cliff.setPosition(cliff.x, cliff.y + this.currentVelocity);
+      cliff.refreshBody();
     });
 
     // Use FacePad Value
@@ -118,6 +113,7 @@ export class Game extends Scene {
     this.add.image(512, 384, "explode");
     this.pop.play();
     this.music.stop();
+    this.currentVelocity = 0;
     setTimeout(() => {
       this.scene.start("GameOver");
       this.scene.stop("Game");
@@ -129,7 +125,6 @@ export class Game extends Scene {
     const newRock = this.obstacle
       .create(Math.random() * this.game.scale.width, 0, "rock")
       .refreshBody();
-
     const rockScale = this.positioning.getScaledSprite(
       ROCK_SIZE.WIDTH,
       ROCK_SIZE.HEIGHT,
@@ -146,9 +141,64 @@ export class Game extends Scene {
     this.rockGroup.push(newRock);
   }
 
+  checkIfCliffAndPlayerCollides(player, cliff) {
+    const rightAngleCorner = cliff.x === 0 ? "top-left" : "top-right";
+
+    const res = isCircleIntersectingTriangle(
+      {
+        height: cliff.displayHeight,
+        width: cliff.displayWidth,
+        x:
+          rightAngleCorner === "top-right"
+            ? cliff.x - cliff.displayWidth / 2
+            : cliff.x + cliff.displayWidth / 2,
+        y: cliff.y + cliff.displayHeight / 2,
+      },
+      {
+        height: player.displayHeight,
+        width: player.displayWidth,
+        x: player.x,
+        y: player.y,
+      },
+      rightAngleCorner
+    );
+
+    return res;
+  }
+
+  createCliff() {
+    const random = Math.random();
+    const side = random < 0.5 ? "l" : "r";
+
+    const newCliff = this.obstacle.create(0, 0, `cliff-${side}`).refreshBody();
+
+    newCliff.setScale(this.positioning.getScaleX());
+    if (side === "l") {
+      newCliff.setOrigin(0, 0);
+    } else {
+      newCliff.setOrigin(1, 0);
+      newCliff.setX(this.game.scale.width);
+    }
+    this.physics.add.overlap(
+      this.player,
+      newCliff,
+      this.hitObstacle,
+      this.checkIfCliffAndPlayerCollides,
+      this
+    );
+
+    this.cliffs.push(newCliff);
+  }
+
   startInterval() {
     this.intervalId = setInterval(() => {
-      this.createObstacle();
+      const random = Math.random();
+
+      if (random < 0.25) {
+        this.createCliff();
+      } else {
+        this.createObstacle();
+      }
     }, Phaser.Math.Between(2000, 8000));
 
     this.velocityIntervalId = setInterval(() => {

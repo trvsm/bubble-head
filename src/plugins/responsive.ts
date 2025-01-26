@@ -18,12 +18,6 @@ export function responsivePositioning(game: Phaser.Game) {
     getCenteredPositionY() {
       return game.scale.height / 2;
     },
-    addBackgroundToScene(scene: Phaser.Scene, key: string = "background") {
-      return scene.add
-        .image(0, 0, key)
-        .setDisplaySize(game.scale.width, game.scale.height)
-        .setDisplayOrigin(0, 0);
-    },
 
     getFontRegular() {
       const fontSize = 16 * this.getScaleY();

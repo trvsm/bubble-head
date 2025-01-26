@@ -9,10 +9,6 @@ export class Preloader extends Scene {
   init() {
     this.positioning = responsivePositioning(this.game);
 
-    //  We loaded this image in our Boot Scene, so we can display it here
-
-    this.positioning.addBackgroundToScene(this);
-
     //  A simple progress bar. This is the outline of the bar.
     this.add
       .rectangle(
