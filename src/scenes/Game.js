@@ -33,6 +33,7 @@ export class Game extends Scene {
     this.leafs = [];
     this.cliffs = [];
     this.hands = [];
+    this.anvil;
 
     this.scoreBox = scoreKeeper;
     this.scoreBox.showScoreBox();
@@ -42,6 +43,7 @@ export class Game extends Scene {
      * SOUND EFFECTS: background music & bubble pop
      */
     this.pop = this.sound.add("pop");
+    this.whistle = this.sound.add("whistle");
 
     this.positioning = responsivePositioning(this.game);
     /**
@@ -115,11 +117,19 @@ export class Game extends Scene {
      */
     this.obstacle = this.physics.add.staticGroup();
     // Add obstacles and start the game
-    this.createLeaf();
     this.startInterval();
   }
 
   update() {
+    // move the rock, refresh to update physics body
+    if (this.anvil) {
+      this.anvil.setPosition(
+        this.anvil.x,
+        this.anvil.y + 10 * this.currentVelocity
+      );
+      this.anvil.refreshBody();
+    }
+ 
     // Move the leafs
     this.leafs.forEach((leaf) => {
       const swayLeft = leaf.getData("swayLeft");
@@ -150,7 +160,7 @@ export class Game extends Scene {
 
     // Move the cliffs
     this.cliffs.forEach((cliff) => {
-      cliff.setPosition(cliff.x, cliff.y + this.currentVelocity);
+      cliff.setPosition(cliff.x, cliff.y + this.currentVelocity * 1.2);
       cliff.refreshBody();
     });
 
@@ -222,6 +232,7 @@ export class Game extends Scene {
   hitObstacle() {
     if (!this.currentVelocity) return;
     this.player.play("pop");
+    this.anvil=null;
     this.pop.play({ volume: 1 });
     this.currentVelocity = 0;
     setTimeout(() => {
@@ -341,19 +352,40 @@ export class Game extends Scene {
     this.hands.push(newHand);
   }
 
+  createAnvil() {
+    this.anvil = null;
+    
+    const newAnvil = this.obstacle
+      .create(Math.random() * this.game.scale.width, 0, "anvil").refreshBody();
+    const anvilScale = this.positioning.getScaledSprite(1024, 1024, 0.2);
+    newAnvil.setDisplaySize(anvilScale.width, anvilScale.height);
+
+    this.physics.add.overlap(
+      this.player,
+      newAnvil,
+      this.hitObstacle,
+      null,
+      this
+    );
+    this.anvil = newAnvil;
+    this.whistle.play();
+  }
+
   startInterval() {
     this.intervalId = setInterval(() => {
       if (!this.currentVelocity) return;
       const random = Math.random();
-
-      if (random < 0.33) {
+      if (random < 0.1) {
+        this.createAnvil();
+      }
+      if (random < 0.3) {
         this.createHand();
-      } else if (random < 0.66) {
+      } else if (random < 0.4) {
         this.createCliff();
       } else {
         this.createLeaf();
       }
-    }, Phaser.Math.Between(2000, 8000) - this.currentVelocity * 0.9);
+    }, 4200 / (this.currentVelocity * 1.07 ** 4));
 
     this.velocityIntervalId = setInterval(() => {
       // Increment the velocity every second
