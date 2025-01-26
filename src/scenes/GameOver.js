@@ -15,14 +15,13 @@ export class GameOver extends Scene {
       .text(
         this.positioning.getCenteredPositionX(),
         this.positioning.getCenteredPositionY(),
-        "Game Over",
+        "Game Over\nClick to play again!",
         this.positioning.getFontLarge()
       )
       .setOrigin(0.5);
 
     this.input.once("pointerdown", () => {
-      this.scene.get("MainMenu").music.stop();
-      this.scene.start("MainMenu");
+      this.scene.start("Game");
     });
   }
 }
