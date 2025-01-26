@@ -133,20 +133,34 @@ export class Game extends Scene {
       cliff.refreshBody();
     });
 
-    setInterval(
-      this.hands.forEach((hand) => {
-        hand.setPosition(
-          hand.texture.key === "hand-l"
-            ? hand.x < -10
-              ? hand.x + 20 * this.currentVelocity
-              : hand.x - 20 * this.currentVelocity
-            : hand.x,
-          hand.y + this.currentVelocity
-        );
-        hand.refreshBody();
-      }),
-      1500
-    );
+    this.hands.forEach((hand) => {
+      hand.setPosition(
+        hand.texture.key === "hand-l"
+          ? hand.getData("inward")
+            ? hand.x + this.currentVelocity
+            : hand.x - this.currentVelocity
+          : hand.getData("inward")
+          ? hand.x - this.currentVelocity
+          : hand.x + this.currentVelocity,
+        hand.y + this.currentVelocity
+      );
+      if (hand.texture.key === "hand-l" && hand.x > -0) {
+        hand.setData("inward", false);
+      } else if (hand.texture.key === "hand-l" && hand.x < -120) {
+        hand.setData("inward", true);
+      } else if (
+        hand.texture.key === "hand-r" &&
+        hand.x < this.game.scale.width - 1
+      ) {
+        hand.setData("inward", false);
+      } else if (
+        hand.texture.key === "hand-r" &&
+        hand.x > this.game.scale.width + 120
+      ) {
+        hand.setData("inward", true);
+      }
+      hand.refreshBody();
+    });
 
     // Use FacePad Value
     const val = this.fp.xValue;
@@ -275,8 +289,10 @@ export class Game extends Scene {
     const random = Math.random();
     const side = random < 0.5 ? "l" : "r";
 
-    const newHand = this.obstacle
-      .create(-120, -48, `hand-${side}`)
+    const newHand = this.obstacle.create(-120, -48, `hand-${side}`);
+    newHand
+      .setData("inward", true)
+
       .refreshBody();
 
     newHand.setScale(this.positioning.getScaleX());
