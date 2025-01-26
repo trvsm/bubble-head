@@ -82,33 +82,40 @@ export class Game extends Scene {
      * ANIMATIONS
      */
     // animate player bubble
-    this.animate = this.anims.create({
-      key: "idle",
-      frames: [{ key: "bubble" }, { key: "frame2" }, { key: "frame4" }],
-      frameRate: 8,
-      repeat: -1,
-    });
+
+    this.animate = this.anims.exists("idle")
+      ? this.anims.get("idle")
+      : this.anims.create({
+          key: "idle",
+          frames: [{ key: "bubble" }, { key: "frame2" }, { key: "frame4" }],
+          frameRate: 8,
+          repeat: -1,
+        });
 
     this.player.play("idle");
     // gameover pop animation
-    this.popAnimation = this.anims.create({
-      key: "pop",
-      frames: [{ key: "pop3" }, { key: "pop4" }],
-      frameRate: 4,
-      repeat: -1,
-    });
+    this.popAnimation = this.anims.exists("pop")
+      ? this.anims.get("pop")
+      : this.anims.create({
+          key: "pop",
+          frames: [{ key: "pop3" }, { key: "pop4" }],
+          frameRate: 4,
+          repeat: -1,
+        });
     // animate leaf
-    this.leafAnimation = this.anims.create({
-      key: "leaf",
-      frames: [
-        { key: "leaf" },
-        { key: "leafFrame2" },
-        { key: "leafFrame3" },
-        { key: "leafFrame4" },
-      ],
-      frameRate: 4,
-      repeat: -1,
-    });
+    this.leafAnimation = this.anims.exists("leaf")
+      ? this.anims.get("leaf")
+      : this.anims.create({
+          key: "leaf",
+          frames: [
+            { key: "leaf" },
+            { key: "leafFrame2" },
+            { key: "leafFrame3" },
+            { key: "leafFrame4" },
+          ],
+          frameRate: 4,
+          repeat: -1,
+        });
 
     const playerScale = this.positioning.getScaledSprite(
       BUBBLE_SIZE.WIDTH,
