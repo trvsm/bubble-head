@@ -11,8 +11,6 @@ export class MainMenu extends Scene {
     this.music = this.sound.add("music", { loop: true }); // can add more in this config args; speed, mute, volume
     this.music.play();
 
-    this.positioning.addBackgroundToScene(this);
-
     this.add
       .text(
         this.positioning.getCenteredPositionX(),

@@ -20,10 +20,9 @@ export class Boot extends Scene {
     this.load.image("background", "assets/blue.png");
     this.load.image("wallLeft", "assets/border_L.png");
     this.load.image("wallRight", "assets/border_R.png");
-    this.load.image("cliffLeft", "assets/Cliff-L.png");
-    this.load.image("cliffRight", "assets/Cliff-R.png");
-    this.load.image("cliffLRect","assets/rect-tree.png");
-    this.load.image("cliffRRect","assets/rect-cliff.png");
+    // Cliffs Obstacle
+    this.load.image("cliff-l", "assets/obstacles/Cliff-L.png");
+    this.load.image("cliff-r", "assets/obstacles/Cliff-R.png");
 
     /**
      * ANIMATION FRAMES
