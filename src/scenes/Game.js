@@ -230,7 +230,9 @@ export class Game extends Scene {
     const random = Math.random();
     const side = random < 0.5 ? "l" : "r";
 
-    const newCliff = this.obstacle.create(0, 0, `cliff-${side}`).refreshBody();
+    const newCliff = this.obstacle
+      .create(0, -256, `cliff-${side}`)
+      .refreshBody();
 
     newCliff.setScale(this.positioning.getScaleX());
     if (side === "l") {
@@ -253,6 +255,7 @@ export class Game extends Scene {
   startInterval() {
     this.intervalId = setInterval(() => {
       const random = Math.random();
+      this.createCliff();
 
       if (random < 0.25) {
         this.createCliff();
