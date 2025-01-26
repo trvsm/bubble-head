@@ -71,7 +71,6 @@ export class Game extends Scene {
     );
     this.player.setCollideWorldBounds(true);
     this.player.setBounce(0.2);
-    this.player.scale = 3;
     this.player.setDepth(1);
 
     /**
@@ -253,7 +252,7 @@ export class Game extends Scene {
       .create(0, -256, `cliff-${side}`)
       .refreshBody();
 
-    newCliff.setScale(this.positioning.getScaleX());
+    newCliff.setScale(this.positioning.getScaleX() * 1.75);
     if (side === "l") {
       newCliff.setOrigin(0, 0);
     } else {
