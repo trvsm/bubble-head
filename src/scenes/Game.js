@@ -86,16 +86,18 @@ export class Game extends Scene {
     // animate player bubble
     this.animate = this.anims.create({
       key: "idle",
-      frames: [
-        { key: "bubble" },
-        { key: "frame2" },
-        // { key: "frame3" },
-        { key: "frame4" },
-      ],
+      frames: [{ key: "bubble" }, { key: "frame2" }, { key: "frame4" }],
       frameRate: 8,
       repeat: -1,
     });
     this.player.play("idle");
+
+    this.popAnimation = this.anims.create({
+      key: "pop",
+      frames: [{ key: "pop3" }, { key: "pop4" }],
+      frameRate: 2,
+      repeat: -1
+    });
 
     const playerScale = this.positioning.getScaledSprite(
       BUBBLE_SIZE.WIDTH,
@@ -129,7 +131,7 @@ export class Game extends Scene {
     this.player.setVelocityX(val * 10);
   }
   hitObstacle() {
-    this.add.image(512, 384, "explode");
+    this.player.play("pop");
     this.pop.play();
     this.music.stop();
     setTimeout(() => {
