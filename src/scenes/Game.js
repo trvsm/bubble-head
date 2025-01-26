@@ -280,6 +280,8 @@ export class Game extends Scene {
   }
 
   hitObstacle() {
+    if (!this.currentVelocity) return;
+
     if (this.cooldown) return;
     if (this.player.getData("lives") > 0) {
       // decrement lives
@@ -296,7 +298,6 @@ export class Game extends Scene {
       }, 800);
       return;
     }
-    if (!this.currentVelocity) return;
     this.pop.play({ volume: 1 });
     this.player.play("pop");
     this.anvil = null;
