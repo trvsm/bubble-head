@@ -171,10 +171,20 @@ export class Game extends Scene {
       cliff.refreshBody();
     });
 
-    this.hands.forEach((hand) => {
-      hand.setPosition(hand.x, hand.y + this.currentVelocity);
-      hand.refreshBody();
-    });
+    setInterval(
+      this.hands.forEach((hand) => {
+        hand.setPosition(
+          hand.texture.key === "hand-l"
+            ? hand.x < -10
+              ? hand.x + 20 * this.currentVelocity
+              : hand.x - 20 * this.currentVelocity
+            : hand.x,
+          hand.y + this.currentVelocity
+        );
+        hand.refreshBody();
+      }),
+      1500
+    );
 
     // Use FacePad Value
     const val = this.fp.xValue;
@@ -301,7 +311,9 @@ export class Game extends Scene {
     const random = Math.random();
     const side = random < 0.5 ? "l" : "r";
 
-    const newHand = this.obstacle.create(0, -48, `hand-${side}`).refreshBody();
+    const newHand = this.obstacle
+      .create(-120, -48, `hand-${side}`)
+      .refreshBody();
 
     newHand.setScale(this.positioning.getScaleX());
 
