@@ -31,8 +31,6 @@ export class Game extends Scene {
     /**
      * SOUND EFFECTS: background music & bubble pop
      */
-    this.music = this.sound.add("music", { loop: true }); // can add more in this config args; speed, mute, volume
-    this.music.play();
     this.pop = this.sound.add("pop");
 
     this.positioning = responsivePositioning(this.game);
@@ -142,7 +140,6 @@ export class Game extends Scene {
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this.input.once("pointerdown", () => {
-      this.music.stop();
       this.scene.start("GameOver");
     });
   }
@@ -163,7 +160,6 @@ export class Game extends Scene {
   hitObstacle() {
     this.player.play("pop");
     this.pop.play();
-    this.music.stop();
     setTimeout(() => {
       this.scene.start("GameOver");
       this.scene.stop("Game");

@@ -8,6 +8,8 @@ export class MainMenu extends Scene {
 
   create() {
     this.positioning = responsivePositioning(this.game);
+    this.music = this.sound.add("music", { loop: true }); // can add more in this config args; speed, mute, volume
+    this.music.play();
 
     this.positioning.addBackgroundToScene(this);
 
