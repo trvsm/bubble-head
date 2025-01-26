@@ -21,6 +21,9 @@ export class Game extends Scene {
   }
 
   create() {
+    this.viewWidth = this.game.scale.width;
+    this.viewHeight = this.game.scale.height;
+
     this.player;
     this.cursors;
     this.bgTile;
@@ -29,6 +32,7 @@ export class Game extends Scene {
     this.rock;
     this.rockGroup = [];
     this.cliffs = [];
+    this.hands = [];
 
     this.fp = FacePad;
     /**
@@ -160,10 +164,29 @@ export class Game extends Scene {
       cliff.refreshBody();
     });
 
+    this.hands.forEach((hand) => {
+      hand.setPosition(hand.x, hand.y + this.currentVelocity);
+      hand.refreshBody();
+    });
+
     // Use FacePad Value
     const val = this.fp.value;
     this.player.setVelocityX(val * 10);
+
+    // Clean up the obstacles that are off screen
+    this.rockGroup = this.rockGroup.filter((rock) => {
+      return rock.y < this.game.scale.height + 48;
+    });
+
+    this.cliffs = this.cliffs.filter((cliff) => {
+      return cliff.y < this.game.scale.height + 256;
+    });
+
+    this.hands = this.hands.filter((hand) => {
+      return hand.y < this.game.scale.height + 48;
+    });
   }
+
   hitObstacle() {
     this.player.play("pop");
     this.pop.play();
@@ -174,6 +197,7 @@ export class Game extends Scene {
     }, 1200);
     this.clearInterval();
   }
+
   // helper function to create obstacles at random intervals/positions
   createObstacle() {
     const newRock = this.obstacle
@@ -248,12 +272,38 @@ export class Game extends Scene {
     this.cliffs.push(newCliff);
   }
 
+  createHand() {
+    const random = Math.random();
+    const side = random < 0.5 ? "l" : "r";
+
+    const newHand = this.obstacle.create(0, -48, `hand-${side}`).refreshBody();
+
+    newHand.setScale(this.positioning.getScaleX());
+
+    if (side === "l") {
+      newHand.setOrigin(0, 0);
+    } else {
+      newHand.setOrigin(1, 0);
+      newHand.setX(this.game.scale.width);
+    }
+    this.physics.add.overlap(
+      this.player,
+      newHand,
+      this.hitObstacle,
+      null,
+      this
+    );
+
+    this.hands.push(newHand);
+  }
+
   startInterval() {
     this.intervalId = setInterval(() => {
       const random = Math.random();
-      this.createCliff();
 
-      if (random < 0.25) {
+      if (random < 0.33) {
+        this.createHand();
+      } else if (random < 0.66) {
         this.createCliff();
       } else {
         this.createObstacle();
