@@ -15,7 +15,7 @@ export class MainMenu extends Scene {
       .image(
         this.positioning.getCenteredPositionX(),
         this.getLogoY() + 100 * this.positioning.getScaleY(),
-        "logo"
+        "title"
       )
       .setOrigin(0.5, 1);
 

@@ -21,6 +21,8 @@ export class Boot extends Scene {
     this.load.image("wallLeft", "assets/border_L.png");
     this.load.image("wallRight", "assets/border_R.png");
     this.load.image("logo", "logo.png");
+    this.load.image("title", "assets/title.png")
+    this.load.image("gameover", 'assets/game-over.png')
 
     /**
      * ANIMATION FRAMES
