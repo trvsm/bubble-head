@@ -247,6 +247,8 @@ export class Game extends Scene {
           const dScale = targetScale - this.bubble.scale;
           this.bubble.setScale(this.bubble.scale + dScale * 0.5);
         }
+
+        this.bubble.refreshBody();
       } else {
         // The bubble is floating down the screen
         // If the bubble is below the screen, destroy it
@@ -262,9 +264,9 @@ export class Game extends Scene {
             this.bubble.x,
             this.bubble.y + this.currentVelocity
           );
+          this.bubble.refreshBody();
         }
       }
-      this.bubble?.refreshBody();
     }
   }
 
