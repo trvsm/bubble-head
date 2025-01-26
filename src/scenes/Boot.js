@@ -47,10 +47,13 @@ export class Boot extends Scene {
     this.load.image("hand-l", "assets/obstacles/mr-hand-l.png");
     this.load.image("hand-r", "assets/obstacles/mr-hand-r.png");
 
+    this.load.image("anvil", "assets/anvil.png");
+
     /**
      * SOUND EFFECTS
      */
     this.load.audio("pop", "assets/pop.mp3");
+    this.load.audio("whistle", "assets/slide-whistle.mp3");
     this.load.audio("music", "assets/cloud-dancer.mp3");
   }
 
