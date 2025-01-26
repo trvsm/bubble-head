@@ -28,3 +28,10 @@ body {
   transform: scaleX(-1);
   max-width: 100%;
 }
+
+#score-box {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 2rem;
+}

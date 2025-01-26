@@ -2,6 +2,7 @@ import { Scene } from "phaser";
 import { FacePad } from "../plugins/facepad";
 import { responsivePositioning } from "../plugins/responsive";
 import { isCircleIntersectingTriangle } from "../plugins/triangle-circle-intersect";
+import { scoreBox } from "../plugins/score-box";
 
 const ROCK_SIZE = {
   WIDTH: 600,
@@ -18,6 +19,7 @@ export class Game extends Scene {
     super("Game");
     this.intervalId = null;
     this.currentVelocity = 1;
+    this.score = 0;
   }
 
   create() {
@@ -33,6 +35,10 @@ export class Game extends Scene {
     this.rockGroup = [];
     this.cliffs = [];
     this.hands = [];
+
+    this.scoreBox = scoreBox();
+    this.scoreBox.setScore(this.score);
+    this.scoreBox.showScore();
 
     this.fp = FacePad;
     /**
@@ -185,6 +191,14 @@ export class Game extends Scene {
     this.hands = this.hands.filter((hand) => {
       return hand.y < this.game.scale.height + 48;
     });
+
+    const numberOfObstaclesPassed =
+      this.rockGroup.filter((rock) => rock.y > this.player.y).length +
+      this.cliffs.filter((cliff) => cliff.y > this.player.y).length +
+      this.hands.filter((hand) => hand.y > this.player.y).length;
+
+    this.score += numberOfObstaclesPassed;
+    this.scoreBox.setScore(this.score);
   }
 
   hitObstacle() {
@@ -194,6 +208,9 @@ export class Game extends Scene {
     setTimeout(() => {
       this.scene.start("GameOver");
       this.scene.stop("Game");
+      this.score = 0;
+      this.scoreBox.hideScore();
+      this.scoreBox.setScore(this.score);
     }, 1200);
     this.clearInterval();
   }
