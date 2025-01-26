@@ -186,7 +186,7 @@ export class Game extends Scene {
   hitObstacle() {
     if (!this.currentVelocity) return;
     this.player.play("pop");
-    this.pop.play();
+    this.pop.play({ volume: 1 });
     this.currentVelocity = 0;
     setTimeout(() => {
       this.scene.start("GameOver");
