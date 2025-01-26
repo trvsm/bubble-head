@@ -224,24 +224,3 @@ function distance(x1: number, y1: number, x2: number, y2: number): number {
   const dy = y2 - y1;
   return Math.sqrt(dx * dx + dy * dy);
 }
-
-// -----------------------------------------------------
-// Example usage:
-
-const triangleBox: CenterBox = {
-  x: 15, // center X
-  y: 15, // center Y
-  width: 30,
-  height: 30,
-};
-
-const circleBox: CenterBox = {
-  x: 20, // circle center X
-  y: 20, // circle center Y
-  width: 30,
-  height: 30, // circle => width == height
-};
-
-// Right angle is at top-left corner of the triangle's bounding box
-const result = isCircleIntersectingTriangle(triangleBox, circleBox, "top-left");
-console.log("Do they intersect?", result);

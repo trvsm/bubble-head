@@ -89,7 +89,7 @@ export class Game extends Scene {
      * PLAYER BUBBLE, stay on screen
      */
     this.player = this.physics.add.sprite(
-      200 * this.positioning.getScaleX(),
+      this.positioning.getCenteredPositionX(),
       this.positioning.getCenteredPositionY(),
       "bubble"
     );
