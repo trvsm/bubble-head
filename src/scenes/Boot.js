@@ -35,7 +35,7 @@ export class Boot extends Scene {
     this.load.image("pop4", "assets/pop4.png");
 
     // leaf obstacle
-    this.load.image("rock", "assets/leaf1.png");
+    this.load.image("leaf", "assets/leaf1.png");
     this.load.image("leafFrame2", "assets/leaf2.png");
     this.load.image("leafFrame3", "assets/leaf3.png");
     this.load.image("leafFrame4", "assets/leaf4.png");

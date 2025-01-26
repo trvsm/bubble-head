@@ -4,7 +4,7 @@ import { responsivePositioning } from "../plugins/responsive";
 import { isCircleIntersectingTriangle } from "../plugins/triangle-circle-intersect";
 import { scoreKeeper } from "../plugins/score-box";
 
-const ROCK_SIZE = {
+const LEAF_SIZE = {
   WIDTH: 600,
   HEIGHT: 389,
 };
@@ -30,8 +30,7 @@ export class Game extends Scene {
     this.bgTile;
     this.bgWall;
     this.obstacle;
-    this.rock;
-    this.rockGroup = [];
+    this.leafs = [];
     this.cliffs = [];
     this.hands = [];
     this.anvil;
@@ -98,7 +97,7 @@ export class Game extends Scene {
     this.leafAnimation = this.anims.create({
       key: "leaf",
       frames: [
-        { key: "rock" },
+        { key: "leaf" },
         { key: "leafFrame2" },
         { key: "leafFrame3" },
         { key: "leafFrame4" },
@@ -117,8 +116,7 @@ export class Game extends Scene {
      * OBSTACLES
      */
     this.obstacle = this.physics.add.staticGroup();
-    // add rock obstacle at start & every 2-8 seconds
-    // this.createObstacle();
+    // Add obstacles and start the game
     this.startInterval();
   }
 
@@ -131,9 +129,33 @@ export class Game extends Scene {
       );
       this.anvil.refreshBody();
     }
-    this.rockGroup.forEach((rock) => {
-      rock.setPosition(rock.x, rock.y + this.currentVelocity * 0.8);
-      rock.refreshBody();
+ 
+    // Move the leafs
+    this.leafs.forEach((leaf) => {
+      const swayLeft = leaf.getData("swayLeft");
+      let position = leaf.getData("position");
+      const maxSway = leaf.getData("maxSway");
+      let newX;
+      if (swayLeft) {
+        newX = leaf.x - 1;
+        position -= 1;
+      } else {
+        newX = leaf.x + 1;
+        position += 1;
+      }
+
+      leaf.setPosition(newX, leaf.y + this.currentVelocity * 0.5);
+      leaf.setData("position", position);
+      if (position > maxSway) {
+        const randomMax = Math.round(Math.max(Math.random() * 50, 30));
+        leaf.setData("swayLeft", true);
+        leaf.setData("maxSway", randomMax);
+      } else if (position < -1 * maxSway) {
+        leaf.setData("swayLeft", false);
+        const randomMax = Math.round(Math.max(Math.random() * 50, 30));
+        leaf.setData("maxSway", randomMax);
+      }
+      leaf.refreshBody();
     });
 
     // Move the cliffs
@@ -142,6 +164,7 @@ export class Game extends Scene {
       cliff.refreshBody();
     });
 
+    // Move the hands
     this.hands.forEach((hand) => {
       hand.setPosition(
         hand.texture.key === "hand-l"
@@ -184,8 +207,8 @@ export class Game extends Scene {
     }
 
     // Clean up the obstacles that are off screen
-    this.rockGroup = this.rockGroup.filter((rock) => {
-      return rock.y < this.game.scale.height + 48;
+    this.leafs = this.leafs.filter((leaf) => {
+      return leaf.y < this.game.scale.height + 48;
     });
 
     this.cliffs = this.cliffs.filter((cliff) => {
@@ -197,7 +220,7 @@ export class Game extends Scene {
     });
 
     const numberOfObstaclesPassed =
-      this.rockGroup.filter((rock) => rock.y > this.player.y).length +
+      this.leafs.filter((leaf) => leaf.y > this.player.y).length +
       this.cliffs.filter((cliff) => cliff.y > this.player.y).length +
       this.hands.filter((hand) => hand.y > this.player.y).length;
 
@@ -221,27 +244,32 @@ export class Game extends Scene {
     this.clearInterval();
   }
 
-  // helper function to create obstacles at random intervals/positions
-  createObstacle() {
-    const newRock = this.obstacle
-      .create(Math.random() * this.game.scale.width, 0, "rock")
+  /**
+   * Create a leaf obstacle
+   */
+  createLeaf() {
+    const newLeaf = this.obstacle
+      .create(Math.random() * this.game.scale.width, 0, "leaf")
+      .setData("swayLeft", true)
+      .setData("position", 0)
+      .setData("maxSway", 50)
       .refreshBody();
-    newRock.play("leaf");
+    newLeaf.play("leaf");
 
-    const rockScale = this.positioning.getScaledSprite(
-      ROCK_SIZE.WIDTH,
-      ROCK_SIZE.HEIGHT,
+    const leafScale = this.positioning.getScaledSprite(
+      LEAF_SIZE.WIDTH,
+      LEAF_SIZE.HEIGHT,
       0.33
     );
-    newRock.setDisplaySize(rockScale.width, rockScale.height);
+    newLeaf.setDisplaySize(leafScale.width, leafScale.height);
     this.physics.add.overlap(
       this.player,
-      newRock,
+      newLeaf,
       this.hitObstacle,
       null,
       this
     );
-    this.rockGroup.push(newRock);
+    this.leafs.push(newLeaf);
   }
 
   checkIfCliffAndPlayerCollides(player, cliff) {
@@ -355,7 +383,7 @@ export class Game extends Scene {
       } else if (random < 0.4) {
         this.createCliff();
       } else {
-        this.createObstacle();
+        this.createLeaf();
       }
     }, 4200 / (this.currentVelocity * 1.07 ** 4));
 
