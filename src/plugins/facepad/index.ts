@@ -2,7 +2,8 @@ import { getRollAngle, initFaceApi } from "./face-api";
 
 export class FacePadPlugin {
   private faceDetected: boolean = false;
-  private _value: number = 0;
+  private _xValue: number = 0;
+  private _yValue: number = 0;
   private _container: HTMLDivElement;
   private _video: HTMLVideoElement;
 
@@ -64,9 +65,12 @@ export class FacePadPlugin {
       return;
     }
 
-    const { faceDetected, rollAngle } = await getRollAngle(this._video);
+    const { faceDetected, rollAngle, happiness } = await getRollAngle(
+      this._video
+    );
 
-    this._value = -1 * rollAngle;
+    this._xValue = -1 * rollAngle;
+    this._yValue = happiness;
     this.faceDetected = faceDetected;
 
     setTimeout(() => {
@@ -108,8 +112,12 @@ export class FacePadPlugin {
   /**
    * The current value of the rollangle.
    */
-  get value() {
-    return this._value;
+  get xValue() {
+    return this._xValue;
+  }
+
+  get yValue() {
+    return this._yValue;
   }
 }
 

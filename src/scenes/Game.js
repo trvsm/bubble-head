@@ -2,6 +2,7 @@ import { Scene } from "phaser";
 import { FacePad } from "../plugins/facepad";
 import { responsivePositioning } from "../plugins/responsive";
 import { isCircleIntersectingTriangle } from "../plugins/triangle-circle-intersect";
+import { scoreBox } from "../plugins/score-box";
 
 const ROCK_SIZE = {
   WIDTH: 600,
@@ -18,9 +19,13 @@ export class Game extends Scene {
     super("Game");
     this.intervalId = null;
     this.currentVelocity = 1;
+    this.score = 0;
   }
 
   create() {
+    this.viewWidth = this.game.scale.width;
+    this.viewHeight = this.game.scale.height;
+
     this.player;
     this.cursors;
     this.bgTile;
@@ -29,6 +34,11 @@ export class Game extends Scene {
     this.rock;
     this.rockGroup = [];
     this.cliffs = [];
+    this.hands = [];
+
+    this.scoreBox = scoreBox();
+    this.scoreBox.setScore(this.score);
+    this.scoreBox.showScore();
 
     this.fp = FacePad;
     /**
@@ -161,10 +171,44 @@ export class Game extends Scene {
       cliff.refreshBody();
     });
 
+    this.hands.forEach((hand) => {
+      hand.setPosition(hand.x, hand.y + this.currentVelocity);
+      hand.refreshBody();
+    });
+
     // Use FacePad Value
-    const val = this.fp.value;
+    const val = this.fp.xValue;
     this.player.setVelocityX(val * 10);
+
+    // console.log(this.player.y, this.game.scale.height);
+    if (this.player.y > this.game.scale.height - 48) {
+      this.player.setVelocityY(
+        Math.max(-this.fp.yValue * 100 * this.currentVelocity, -600)
+      );
+    }
+
+    // Clean up the obstacles that are off screen
+    this.rockGroup = this.rockGroup.filter((rock) => {
+      return rock.y < this.game.scale.height + 48;
+    });
+
+    this.cliffs = this.cliffs.filter((cliff) => {
+      return cliff.y < this.game.scale.height + 256;
+    });
+
+    this.hands = this.hands.filter((hand) => {
+      return hand.y < this.game.scale.height + 48;
+    });
+
+    const numberOfObstaclesPassed =
+      this.rockGroup.filter((rock) => rock.y > this.player.y).length +
+      this.cliffs.filter((cliff) => cliff.y > this.player.y).length +
+      this.hands.filter((hand) => hand.y > this.player.y).length;
+
+    this.score += numberOfObstaclesPassed;
+    this.scoreBox.setScore(this.score);
   }
+
   hitObstacle() {
     this.player.play("pop");
     this.pop.play();
@@ -172,9 +216,13 @@ export class Game extends Scene {
     setTimeout(() => {
       this.scene.start("GameOver");
       this.scene.stop("Game");
+      this.score = 0;
+      this.scoreBox.hideScore();
+      this.scoreBox.setScore(this.score);
     }, 1200);
     this.clearInterval();
   }
+
   // helper function to create obstacles at random intervals/positions
   createObstacle() {
     const newRock = this.obstacle
@@ -249,12 +297,38 @@ export class Game extends Scene {
     this.cliffs.push(newCliff);
   }
 
+  createHand() {
+    const random = Math.random();
+    const side = random < 0.5 ? "l" : "r";
+
+    const newHand = this.obstacle.create(0, -48, `hand-${side}`).refreshBody();
+
+    newHand.setScale(this.positioning.getScaleX());
+
+    if (side === "l") {
+      newHand.setOrigin(0, 0);
+    } else {
+      newHand.setOrigin(1, 0);
+      newHand.setX(this.game.scale.width);
+    }
+    this.physics.add.overlap(
+      this.player,
+      newHand,
+      this.hitObstacle,
+      null,
+      this
+    );
+
+    this.hands.push(newHand);
+  }
+
   startInterval() {
     this.intervalId = setInterval(() => {
       const random = Math.random();
-      this.createCliff();
 
-      if (random < 0.25) {
+      if (random < 0.33) {
+        this.createHand();
+      } else if (random < 0.66) {
         this.createCliff();
       } else {
         this.createObstacle();

@@ -20,9 +20,6 @@ export class Boot extends Scene {
     this.load.image("background", "assets/blue.png");
     this.load.image("wallLeft", "assets/border_L.png");
     this.load.image("wallRight", "assets/border_R.png");
-    // Cliffs Obstacle
-    this.load.image("cliff-l", "assets/obstacles/Cliff-L.png");
-    this.load.image("cliff-r", "assets/obstacles/Cliff-R.png");
 
     /**
      * ANIMATION FRAMES
@@ -41,6 +38,14 @@ export class Boot extends Scene {
     this.load.image("leafFrame2", "assets/leaf2.png");
     this.load.image("leafFrame3", "assets/leaf3.png");
     this.load.image("leafFrame4", "assets/leaf4.png");
+
+    // Cliffs Obstacle
+    this.load.image("cliff-l", "assets/obstacles/Cliff-L.png");
+    this.load.image("cliff-r", "assets/obstacles/Cliff-R.png");
+
+    // Hand obstacle
+    this.load.image("hand-l", "assets/obstacles/mr-hand-l.png");
+    this.load.image("hand-r", "assets/obstacles/mr-hand-r.png");
 
     /**
      * SOUND EFFECTS

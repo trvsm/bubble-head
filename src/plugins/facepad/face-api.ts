@@ -6,12 +6,10 @@ const BASE_PATH = window.location.pathname;
 
 const MODEL_URL = `${BASE_PATH}/models`;
 
-faceapi.loadTinyFaceDetectorModel(MODEL_URL);
-faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
-
 export function initFaceApi() {
   faceapi.loadTinyFaceDetectorModel(MODEL_URL);
   faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
+  faceapi.loadFaceExpressionModel(MODEL_URL);
 }
 
 function isFaceDetectionModelLoaded() {
@@ -28,22 +26,21 @@ export async function getRollAngle(videoEl: HTMLVideoElement): Promise<{
   faceDetected: boolean;
   rollAngle: number;
   midPoint: number;
+  happiness: number;
 }> {
   if (videoEl.paused || videoEl.ended || !isFaceDetectionModelLoaded())
-    return { faceDetected: false, rollAngle: 0, midPoint: 0 };
+    return { faceDetected: false, rollAngle: 0, midPoint: 0, happiness: 0 };
 
   const result = await faceapi
     .detectSingleFace(videoEl, options)
-    .withFaceLandmarks(true);
+    .withFaceLandmarks(true)
+    .withFaceExpressions();
 
   if (!result) {
-    return { faceDetected: false, rollAngle: 0, midPoint: 0 };
+    return { faceDetected: false, rollAngle: 0, midPoint: 0, happiness: 0 };
   }
 
   const originalRollAngle = getFaceRollAngle(result.landmarks.positions);
-
-  // Set rollAngle from -20 to 20 to a value between 0 and 1
-  const rollAngle = Math.min(Math.max(originalRollAngle, -20), 20);
 
   // Get the midpoint to a value between 0 and 1
   const midPoint =
@@ -57,5 +54,6 @@ export async function getRollAngle(videoEl: HTMLVideoElement): Promise<{
     faceDetected: true,
     rollAngle: originalRollAngle,
     midPoint,
+    happiness: result.expressions.happy,
   };
 }
