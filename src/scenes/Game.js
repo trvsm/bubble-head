@@ -93,6 +93,7 @@ export class Game extends Scene {
         });
 
     this.player.play("idle");
+
     // gameover pop animation
     this.popAnimation = this.anims.exists("pop")
       ? this.anims.get("pop")
@@ -104,15 +105,20 @@ export class Game extends Scene {
         });
 
     // animateoverbubble
-    this.overbubble = this.anims.create({
-      key: "overbubble",
-      frames: [{ key: "overbubble" }, { key: "bubble" }],
-    });
+    this.overbubble = this.anims.exists("overbubble")
+      ? this.anims.get("overbubble")
+      : this.anims.create({
+          key: "overbubble",
+          frames: [{ key: "overbubble" }, { key: "bubble" }],
+        });
     //animate unbubble
-    this.unbubble = this.anims.create({
-      key: "unbubble",
-      frames: [{ key: "bubble" }, { key: "overbubble" }],
-    });
+    this.unbubble = this.anims.exists("unbubble")
+      ? this.anims.get("unbubble")
+      : this.anims.create({
+          key: "unbubble",
+          frames: [{ key: "bubble" }, { key: "overbubble" }],
+        });
+
     // animate leaf
     this.leafAnimation = this.anims.exists("leaf")
       ? this.anims.get("leaf")
@@ -276,7 +282,6 @@ export class Game extends Scene {
           this.bubble.y >
           this.game.scale.height + 10 * this.positioning.getScaleY()
         ) {
-          this.bubble.destroy();
           this.bubble = null;
         } else {
           // Move the bubble down the screen
@@ -284,6 +289,7 @@ export class Game extends Scene {
             this.bubble.x,
             this.bubble.y + this.currentVelocity
           );
+          console.log(this.bubble);
           this.bubble.refreshBody();
         }
       }
@@ -312,8 +318,7 @@ export class Game extends Scene {
     }
     this.pop.play({ volume: 1 });
     this.player.play("pop");
-    this.anvil = null;
-    this.currentVelocity = 0;
+    this.reset();
     setTimeout(() => {
       this.scene.start("GameOver");
       this.scene.stop("Game");
@@ -530,6 +535,16 @@ export class Game extends Scene {
       // Reset the velocity
       this.currentVelocity = 1;
     }
+  }
+
+  reset() {
+    this.anvil = null;
+    this.currentVelocity = 0;
+    this.player.setData("lives", 0);
+    this.leafs = [];
+    this.cliffs = [];
+    this.hands = [];
+    this.bubble = null;
   }
 
   getTopBarTextWidth() {
