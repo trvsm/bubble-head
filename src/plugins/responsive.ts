@@ -20,7 +20,7 @@ export function responsivePositioning(game: Phaser.Game) {
     },
 
     getFontRegular() {
-      const fontSize = 24 * this.getScaleY();
+      const fontSize = 36 * this.getScaleY();
       return {
         fontFamily: "Arial Black",
         fontSize,
