@@ -188,6 +188,7 @@ export class Game extends Scene {
 
     // Move the hands
     this.hands.forEach((hand) => {
+      // could use a simpler ternary for spring-like behaviour; increase up to a tolerance, then jump back a bunch
       hand.setPosition(
         hand.texture.key === "hand-l"
           ? hand.getData("inward")
